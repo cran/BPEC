@@ -11,7 +11,6 @@
 #include <R.h>
 #include <Rmath.h>
 #include <Rinternals.h> 
-#include "Rinterface.h"
 #include <R_ext/Utils.h>  
 
 int nodeorderquick(int i,int **quickclado,int *clado,int count);

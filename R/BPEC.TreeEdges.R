@@ -1,80 +1,72 @@
-BPEC.TreeEdges = function(MCMCout)
-{
+bpec.treeEdges = function(MCMCout) {
+   
   count = MCMCout$countR
-  root = which.max(MCMCout$RootProbsR)
+  rootProbMean = MCMCout$rootProbsR[1:MCMCout$countR] + MCMCout$rootProbsR[(MCMCout$countR+1):(MCMCout$countR * 2)]
+  root = which.max(rootProbMean)
   levels = MCMCout$levelsR
-  datsiz = MCMCout$NoSamplesR
+  datSiz = MCMCout$noSamplesR
   clado = MCMCout$cladoR
 
-  SeqLabels =MCMCout$SeqsFileR[MCMCout$SeqLabelsR]
+  seqLabels = MCMCout$seqsFileR[MCMCout$seqLabelsR]
+ 
+  
+ edgeList = NULL
+ plotheight = sqrt(2)
+ levels = levels + 1
 
- edgelist = NULL
- plotheight=sqrt(2)
- levels=levels+1
-
- if(length(SeqLabels)<count)
-   {
-     SeqLabels=c(SeqLabels,rep(0,count-length(SeqLabels)))
+ if (length(seqLabels) < count) {
+     seqLabels = c(seqLabels, rep(0, count - length(seqLabels)))
    }
  
- counter=max(SeqLabels)+1
- for(i in 1:count)
-   {
-     if(SeqLabels[i]==0)
-       {
-         SeqLabels[i]=counter
-         counter=counter+1
+ counter = max(seqLabels) + 1
+ for(i in 1:count) {
+     if (seqLabels[i] == 0) {
+         seqLabels[i] = counter
+         counter = counter + 1
        }
    }
  
- NodeOrder=array(0,count)
- newNodeOrder=array(0,count)
- MaxLevel=max(levels)
- NodeOrder[1]=root
- newNodeOrder[1]=root
- descendantcounter=2
- descendants=0
+ nodeOrder = array(0, count)
+ newNodeOrder = array(0, count)
+ maxLevel = max(levels)
+ nodeOrder[1] = root
+ newNodeOrder[1] = root
+ descendantCounter = 2
+ descendants = 0
  
- for(i in 1:MaxLevel)
-   {
-     prevdescendants=descendants
+ for(i in 1:maxLevel) {
+     prevDescendants = descendants
      
-     descendants=1
-     NodeOrder=newNodeOrder
-     for(j in 1:count)
-       {
-         if(levels[j]==i)
-           {
-             descendants=descendants+1
+     descendants = 1
+     nodeOrder = newNodeOrder
+     for(j in 1:count) {
+         if (levels[j] == i) {
+             descendants = descendants + 1
            }
        }
-     prevord=descendantcounter-1
+     prevOrd = descendantCounter - 1
     # print(descendantcounter)
     # print(prevord)
-     descendantcounter=1
-     previousone=-1
+     descendantcounter = 1
+     previousOne = -1
      
-     if(prevord>0)
-       {
-         for(j in 1:prevord)
-           {             
-             for(l in 1:count)
-               {
-                 if((clado[(NodeOrder[j]-1)*count+l]==1||clado[(l-1)*count+NodeOrder[j]]==1)&&levels[l]==i)
-                   {
+     if (prevOrd > 0) {
+         for(j in 1:prevOrd) {             
+             for(l in 1:count) {
+                 if ((clado[(nodeOrder[j] - 1) * count + l] == 1 || clado[(l-1) * count + nodeOrder[j]] == 1) && levels[l] == i) {
                       # print(l)
                                         # edgelist output
-                     edgelist = rbind(edgelist, data.frame(vert.from=SeqLabels[NodeOrder[j]],vert.to=SeqLabels[l],level=i,ssize=datsiz[l]))                   
+                     edgeList = rbind(edgeList, data.frame(vert.from = seqLabels[nodeOrder[j]], vert.to = seqLabels[l], level = i, ssize = datSiz[l]))                   
                      
-                     previousone=l
-                     newNodeOrder[descendantcounter]=l
-                     descendantcounter=descendantcounter+1
+                     previousOne = l
+                     newNodeOrder[descendantCounter] = l
+                     descendantCounter = descendantCounter + 1
                      next
                    }
                }
            }
        }
    }
- return(edgelist)
+ return(edgeList)
 }
 

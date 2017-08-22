@@ -13,9 +13,8 @@
 
 #include <R.h>
 #include <Rmath.h>
-#include <Rinternals.h> 
-#include "Rinterface.h"
-#include <R_ext/Utils.h>  
+//#include <Rinternals.h> 
+//#include <R_ext/Utils.h>  
 
 #define NMAXX 1000141//10000141 //this is the mod 10000141 is prime and so is -2
 #define MaxCap 10000 //this is the max for a long int to store .
@@ -35,12 +34,12 @@
 #define Pi 3.14159265358979323846
 #define nloop 1000 // no. of extra nodes we add, not easy 2 know b4hand.can find out b4 MCMC and adjust it not to waste time. 
 
-int MaxMig,samsize,length,dim,mprior,ModPower;
+int maxMig,samsize,length,dim,mprior,ModPower;
 
 char **TT,**t,**TTemp; 
-int *maxGroup,**maxIndic,*level,*group,*clado,*size,*Size,*datsiz,*e,*central,*Central,**centrall,**Centrall,*ce,*Ce,count,q,**path,initial,*tempclado,*loopy,flag,*flagpoint,simonflag,templ,*templpoint,loopno=0,minloop,*minlooppoint,**tempath,*sorted,*don,*ddon,root[2],*mutnpos,*Mutnpos,*deletedge,*Deletedge,**edge,**Edge,*Group,*ffnew,*fffnew,tempvar=0,tempvardeleted,var1,var2,acceptroot,acceptprobs,**indic,**Indic,countinit,groupedgeno=0,Groupedgeno,groupnodeno=0,totalgroupedgeno=0,bull=0,edgetotal,*treecombination,**mutorder,**Mutorder,*various,*temppvarious,*other,*identi,*distance,*seqsfile,*snp,*snpposition,countsnp,*done,maxmig[2],edgeprop8upto,**datsizorder,**Datsizorder,**peripherorder,**Peripherorder,*fffneworder,*Fffneworder,removedcentral,removedhaplo,**sizeRJ,**historyorder,**Historyorder,totalcount;
+int *maxGroup,**maxIndic,*level,*group,*clado,*size,*Size,*datsiz,*e,*central,*Central,**centrall,**Centrall,*ce,*Ce,count,q,**path,initial,*tempclado,*loopy,flag,*flagpoint,simonflag,templ,*templpoint,loopno=0,minloop,*minlooppoint,**tempath,*sorted,*don,*ddon,root[2],*mutnpos,*Mutnpos,*deletedge,*Deletedge,**edge,**Edge,*Group,*ffnew,*fffnew,tempvar=0,tempvardeleted,var1,var2,acceptroot,acceptprobs,**indic,**Indic,countinit,groupedgeno=0,Groupedgeno,groupnodeno=0,totalgroupedgeno=0,bull=0,edgetotal,*treecombination,**mutorder,**Mutorder,*various,*temppvarious,*other,*identi,*distance,*seqsFile,*snp,*snpposition,countsnp,*done,maxmig[2],edgeprop8upto,**datsizorder,**Datsizorder,**peripherorder,**Peripherorder,*fffneworder,*Fffneworder,removedcentral,removedhaplo,**sizeRJ,**historyorder,**Historyorder,totalcount;
 double lik=1,Lik,tremp,tremp1,***data,*mix,*Mix,*mixtot,**mixx,**Mixx,**mixxtot,**muprior,**mean,***tau,**tempmat3,*ancestrallocation,**loc,ww,wwnew,wwtotal=0,*temp_ancestral;
-double *tempvec2,mpriori[2],**psimat,**psimatprior;
+double *tempvec2,mpriori[2],**psimat;
 double g,***muRJ,****tauRJ;
 
 int factorial(int i)
@@ -82,6 +81,7 @@ int permuted(int k,int l,int *permute)//label arrangament of 1...l specific one 
 {
   int i,counter,j,*ddon,tt;
   ddon=(int *)calloc(l,sizeof(int));
+ 
   for(i=0;i<l;i++)
     {
       tt=(int)(k%(factorial(l-i)))/(factorial(l-i-1));
@@ -427,7 +427,7 @@ int ancestralgroup_add(double *totalancestral,int root,int i,int x,int drist,int
 		      //ancestrallocation[w]=ancestrallocation[w]+(double)1/totalancestral[0]/temp_ancestral[i];
 		      //ancestrallocation[w]=ancestrallocation[w]+(double)1/tempvar/identi[i]/loc[w][0];
 		      //		      ancestrallocation[w]=ancestrallocation[w]+(double)1/temp_ancestral[i]/loc[w][0]/totalancestral[0];
-		        ancestrallocation[w]=ancestrallocation[w]+(double)1/totalancestral[0]/loc[w][0];
+		      ancestrallocation[w]=ancestrallocation[w]+(double)1/totalancestral[0]/loc[w][0];
 		      //   Rprintf("location %d gets an extra %lf from root %d\n",w,(double)1/temp_ancestral[i]/loc[w][0]/totalancestral[0],root);
 		      //  break;
 		    }
@@ -808,6 +808,7 @@ int sizeofnocolgroup3(int i,int k,int **quickclado)/*here i is the number of the
 	  if(mean[i][1]>1000||abs(isinf(mean[i][1]))==1||isnan(mean[i][1])==1)
             {
 	      Rprintf("b%lf other %d",mean[i][1],other[i]);
+	      R_FlushConsole();
 	      return 0;
 	    }
           sizeofnocolgroup3(i,j,quickclado);
@@ -1136,6 +1137,7 @@ int sizeofnocolgroup33(int i,int k,int **quickclado)/*here i is the number of th
           if(mean[i][1]>1000||abs(isinf(mean[i][1]))==1||isnan(mean[i][1])==1)
             {
 	      Rprintf("b%lf ",mean[i][1]);
+	      R_FlushConsole();
 	      return 0;
 	    }
 	  if(other[i]>0)
@@ -1238,8 +1240,10 @@ double Assigndatapoints(int dimwish,int l,int **quickclado,double clusterweight)
 			    for(j=0;j<dim;j++)
 			      {
 				Rprintf("%lf ",tempmat3[i][j]);
+				R_FlushConsole();
 			      }
 			    Rprintf("\n");
+			    R_FlushConsole();
 			  }
 			for(i=0;i<datsiz[ce[l]];i++)
 			  {
@@ -1356,6 +1360,7 @@ double Assigndatapoints(int dimwish,int l,int **quickclado,double clusterweight)
 	if(Temp==-group[ce[l]])
 	  {
 	    Rprintf("%lf vs %lf 25943 \n\n",u,temp);
+	    R_FlushConsole();
 	    return 0;
 	  }
 
@@ -1496,6 +1501,7 @@ double assigndatapointsdet(int dimwish,int l,int *tempce,int *tempgroups,int **t
 			Rprintf("the tempgroups is %d\n",tempcentralls[tempce[l]][common]);
 			Rprintf("and other is %d\n",other[tempcentralls[tempce[l]][common]]);
 			Rprintf("problem, other %d mpriori[1] %d -1=%d\n",other[tempcentralls[tempce[l]][common]],(int)mpriori[1],other[tempcentralls[tempce[l]][common]]+(int)mpriori[1]-1);
+			R_FlushConsole();
 			return 0;
 		      }
 					      
@@ -1572,6 +1578,7 @@ double assigndatapointsdet(int dimwish,int l,int *tempce,int *tempgroups,int **t
 		if(isnan(tempvec2[tempcentralls[tempce[l]][common]])==1)
 		  {
 		    Rprintf("25969 ");
+		    R_FlushConsole();
 		    return 0;
 		  }
 	      }
@@ -1580,6 +1587,7 @@ double assigndatapointsdet(int dimwish,int l,int *tempce,int *tempgroups,int **t
 	  {
 			      
 	    Rprintf("line 16369\n");
+	    R_FlushConsole();
 	    return -1;
 	  }        
       
@@ -1682,6 +1690,7 @@ double assigndatapointsdet(int dimwish,int l,int *tempce,int *tempgroups,int **t
 		Rprintf("\n");
 	      }
 	    Rprintf("%lf vs %lf 25943 \n\n",u,temp);
+	    R_FlushConsole();
 	    return 0;
 	  }
 	Temp=tempcentralls[tempce[l]][Temp];
@@ -1775,6 +1784,7 @@ double assignperipheralsdet(int dimwish,int l,int *tempce,int *tempgroups,int **
 		    if(tempcentralls[i][w]==tempcentralls[i][common]&&w!=common)
 		      {
 			Rprintf("hhhhhhhsfdddddddddddddddddddddddddddddddddd temp\n");
+			R_FlushConsole();
 			return 0;
 		      }
 		  }
@@ -1860,6 +1870,7 @@ double assignperipheralsdet(int dimwish,int l,int *tempce,int *tempgroups,int **
 		if(isnan(tremp)==1||abs(isinf(tremp))==1)
 		  {
 		    Rprintf("5251 the problem was caused by data %lf %lf tempmean %lf %lf temptau %lf %lf %lf group %d\n",data[i][j][0],data[i][j][1],tempmean[tempcentralls[tempce[l]][Temp]][0],tempmean[tempcentralls[tempce[l]][Temp]][1],temptau[tempcentralls[tempce[l]][Temp]][0][0],temptau[tempcentralls[tempce[l]][Temp]][0][1],temptau[tempcentralls[tempce[l]][Temp]][1][1],tempcentralls[tempce[l]][Temp]);
+		    R_FlushConsole();
 		    return 0;
 		  }
 	      }
@@ -1879,6 +1890,7 @@ double assignperipheralsdet(int dimwish,int l,int *tempce,int *tempgroups,int **
 	    if(tempgroups[1]<-200&&datsiz[i]>0)
 	      {
 		Rprintf("tempvec2[%d] is %lf ",tempcentralls[tempce[l]][Temp],log(tempmixes[l][tempcentralls[tempce[l]][Temp]])+tremp);
+		R_FlushConsole();
 	      }
 	    //NOW SUBTRACT
 	    for(j=0;j<dim;j++)
@@ -1952,6 +1964,7 @@ double assignperipheralsdet(int dimwish,int l,int *tempce,int *tempgroups,int **
 	    if(abs(isinf(tempvec2[tempcentralls[tempce[l]][Temp]]))==1||isnan(tempvec2[tempcentralls[tempce[l]][Temp]])==1)
 	      {
 		Rprintf("the problem was caused by mix %lf\n",tempmixes[l][tempcentralls[tempce[l]][Temp]]);
+		R_FlushConsole();
 		return 0;
 	      }
 					
@@ -2175,6 +2188,7 @@ double assignperipheralsdet(int dimwish,int l,int *tempce,int *tempgroups,int **
 	if(tempmean[tempgroups[i]][1]>10000000||abs(isinf(tempmean[tempgroups[i]][1]))==1)
 	  {
 	    Rprintf("27581");
+	    R_FlushConsole();
 	    return -1;
 	  }
 			    		
@@ -2317,8 +2331,15 @@ double clusteringtoclustering(int dimwish,int *tempCe,int *tempGroups,int **temp
   other=(int *)calloc((tempmaxmut+1),sizeof(int));//the sizes
   various=(int *)calloc(count,sizeof(int));//substitute for don. 		
   sorted=(int *)calloc(count,sizeof(int));
-  done=(int *)calloc(20*count,sizeof(int));
-  ddon=(int *)calloc(20*count,sizeof(int));
+  if(count>1)
+    {
+      done=(int *)calloc(20*count,sizeof(int));
+      ddon=(int *)calloc(20*count,sizeof(int));
+    }
+  else{
+    done=(int *)calloc(20*datsiz[0],sizeof(int));
+    ddon=(int *)calloc(20*datsiz[0],sizeof(int));
+  }
   ffnew=(int *)calloc((count),sizeof(int));//this will tell us if we're done this central yet. 
   fffnew=(int *)calloc((tempmaxmut+2),sizeof(int));//this will tell us if we're done this central yet. 
   for(j=0;j<tempmaxmut+1;j++)
@@ -2333,7 +2354,7 @@ double clusteringtoclustering(int dimwish,int *tempCe,int *tempGroups,int **temp
     }
   Temp=-1;
  
-  for(l=0;l<MaxMig+1;l++)
+  for(l=0;l<maxMig+1;l++)
     {
       tempsize[l]=tempSize[l];
       tempsize[l]=0;
@@ -3906,7 +3927,7 @@ int identify(char a)
     {
       return 3;
     }
- if (a=='-')
+  if (a=='-')
     {
       return 4;
     }
@@ -4084,14 +4105,14 @@ double min(double a,double b)
   return b;
 }
 
-void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDimsR,double *seqsfileR,double *SeqCountR,double *SeqLengthR,double *locnoR,double *MaxLocR,double *maxmigR,double *seedsR,double *iterR,double *dsR,double *ancestralR,double *SampleMeansR,double *SampleCovsR,double *SampleIndicesR,double *SampleClusterCodaR,double *SampleRootCodaR,double *PostSamplesR,double *levelsR,double *cladoR,double *EdgeTotalProbR,double *NoSamplesR,double *ClusterProbsR,double *countR,double *MigProbsR,double *RootProbsR,double *RootLocProbsR,double *MCMCparamsR,double *SeqLabelsR,double *NSeqR,double *errorcodeR) 
+void bpecfunction(double *modeInitial,char **seqR,double *coordsLocsR,double *coordsDimsR,double *seqsFileR,double *seqCountR,double *seqLengthR,double *locNoR,double *maxLocR,double *maxMigR,double *seedsR,double *iterR,double *dsR,double *ancestralR,double *LocDataR,double *sampleMeansR,double *sampleCovsR,double *sampleIndicesR,double *sampleClusterCodaR,double *sampleRootCodaR,double *postSamplesR,double *levelsR,double *cladoR,double *edgeTotalProbR,double *noSamplesR,double *clusterProbsR,double *countR,double *migProbsR,double *rootProbsR,double *rootLocProbsR,double *MCMCparamsR,double *seqLabelsR,double *nSeqR,double *errorCodeR) 
 {
-  char  *S,**T;
+  char  **T;
 
-  int i,j,jj,k,l,*freq=NULL,w,*observed,common,store1=-1,store2=-1,totalmindist,***rep,groupno,mutated,otherno,*lots,**commut,Temp,maxi,*cat,**smallots,flag1,flag2,upd[2],obs[5],**rootfreq=NULL,*temprootfreq=NULL,*NodeTotalProb=NULL,K,**haploc,total=0,*howmany,reject0=0,*groupedge=NULL,*groupnode=NULL,*groupnodefull=NULL,*groupnodeinfo=NULL,*centraltot=NULL,*joinloop=NULL,*loopinfo=NULL,**included=NULL,*loopedge,**groupedg=NULL,**groupmut=NULL,*SeqLabels=NULL,**quickedges,**quickclado,iii,fffnewcounter,*siztotal,*sitehits=NULL,maxsitehits,**whichedge=NULL,*nullloop=NULL,*whichnull,treesizedistance=0,**fullclust,*totfullclust,dimwish=(int)wishdim,samecentral=-1,nextone=0,PostSamples,seeds,iter,locno,Ldep,rememb=-1,flagtopology,*leafdistance;
+  int i,j,jj,k,l,*freq=NULL,w,*observed,common,store1=-1,store2=-1,totalmindist,***rep,groupno,mutated,otherno,*lots,**commut,Temp,maxi,*cat,**smallots,flag1,flag2,upd[2],obs[5],**rootfreq=NULL,*temprootfreq=NULL,*NodeTotalProb=NULL,K,**haploc,total=0,*howmany,reject0=0,*groupedge=NULL,*groupnode=NULL,*groupnodefull=NULL,*groupnodeinfo=NULL,*centraltot=NULL,*joinloop=NULL,*loopinfo=NULL,*loopedge,**groupedg=NULL,**groupmut=NULL,*seqLabels=NULL,**quickedges,**quickclado,iii,fffnewcounter,*siztotal,*sitehits=NULL,maxsitehits,**whichedge=NULL,*nullloop=NULL,*whichnull,treesizedistance=0,**fullclust,dimwish=(int)wishdim,samecentral=-1,nextone=0,postSamples,seeds,iter,locNo,Ldep,rememb=-1,flagtopology,*leafdistance;
  
   time_t time0;  
-  double u,**Mean,*p,*pprop,accept=0,temp,***Tau,**mu,**Mu,**TempMu,***TempTau,*tempvec1=NULL,*tempvec3=NULL,Prod=0,*clusterprobs=NULL,***indicprobs=NULL,**mutotal,***mutot,***tautotal=NULL,****tautot=NULL,*homototal=NULL,**groupfreq,mprioritot=0,**proposalprobs=NULL,rootproposals[2],*rootprobabilities=NULL,**normalization,clusterweight=0.1,Clusterweight=0.1,clusterweighttot=0,longtemp,maxProd=-10000000,TotalPost=0,*EdgeTotalProb=NULL,*totalancestral;
+  double u,**Mean,*p,*pprop,accept=0,temp,***Tau,**mu,**Mu,**TempMu,***TempTau,*tempvec1=NULL,*tempvec3=NULL,Prod=0,*clusterprobs=NULL,***indicprobs=NULL,**mutotal,***mutot,***tautotal=NULL,****tautot=NULL,*homototal=NULL,**groupfreq,mprioritot=0,**proposalprobs=NULL,rootproposals[2],*rootprobabilities=NULL,**normalization,clusterweight=0.1,Clusterweight=0.1,clusterweighttot=0,longtemp,maxProd=-10000000,TotalPost=0,*edgeTotalProb=NULL,*totalancestral;
 
   int *tempCe=NULL;
   int *tempGroups=NULL;
@@ -4106,8 +4127,8 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 
   long int *NX,**NVEC;
 
-  length=(int)SeqLengthR[0];
-  PostSamples=(int)PostSamplesR[0];  
+  length=(int)seqLengthR[0];
+  postSamples=(int)postSamplesR[0];  
 
   minlooppoint=(int *)malloc(2*sizeof(int));
   flagpoint=(int *)malloc(2*sizeof(int));
@@ -4116,35 +4137,35 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   nseqmax=0;
   for(i=0;i<(int)countR[0];i++)
     {
-      //  Rprintf("%d ",(int)NoSamplesR[i]);
-      if(NoSamplesR[i]>nseqmax)
+      //  Rprintf("%d ",(int)noSamplesR[i]);
+      if(noSamplesR[i]>nseqmax)
 	{
-	  nseqmax=(int)NoSamplesR[i];
+	  nseqmax=(int)noSamplesR[i];
 	}
     }
 
-  totalancestral = (double *)malloc(sizeof(double));
-  if(ModeInitial[0]>0.5)
+  totalancestral=(double *)malloc(10*sizeof(double));
+  if(modeInitial[0]>0.5)
     {
-      nseq=(int)SeqCountR[0]+1000;
+      nseq=(int)seqCountR[0]+1000;
       nseqmax=200;
     }
   else
     {
-      nseq=(int)NSeqR[0];
+      nseq=(int)nSeqR[0];
     }
  
  
-  T=(char **)malloc(nseq*sizeof(char *));
+  T=(char **)malloc((nseq+10)*sizeof(char *));
   Temp=0;
-  for(i=0;i<nseq;i++)
+  for(i=0;i<(nseq+10);i++)
     {
       T[i]=(char *)malloc(length*sizeof(char));
-      if(i<(int)SeqCountR[0])
+      if(i<(int)seqCountR[0])
 	{
 	  for(j=0;j<length;j++)
 	    {
-	      T[i][j]=(char)SeqR[Temp][0];
+	      T[i][j]=(char)seqR[Temp][0];
 	      Temp=Temp+1;
 	    }
 	}
@@ -4159,12 +4180,12 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   time ( &rawtime );
   // timeinfo = localtime ( &rawtime );
  
-  int MaxLoc;
-  locno=(int)locnoR[0];
-  dim=(int)CoordsDimsR[0];
-  MaxLoc=(int)MaxLocR[0]; 
+  int maxLoc;
+  locNo=(int)locNoR[0];
+  dim=(int)coordsDimsR[0];
+  maxLoc=(int)maxLocR[0]; 
 
-  MaxMig=(int)(*maxmigR);
+  maxMig=(int)(*maxMigR);
   seeds=(int)(*seedsR);
   iter=(int)(*iterR);
   treesizedistance=(int)(*dsR);
@@ -4180,17 +4201,16 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   psi11 = 1;
   mprior =dim+2;
   
-  ce=(int *)calloc(MaxMig,sizeof(int));
-  Ce=(int *)calloc(MaxMig,sizeof(int));
-  initialzeroint(ce,MaxMig);
-  initialzeroint(Ce,MaxMig);
+  ce=(int *)calloc(maxMig,sizeof(int));
+  Ce=(int *)calloc(maxMig,sizeof(int));
+  initialzeroint(ce,maxMig);
+  initialzeroint(Ce,maxMig);
     
-  totfullclust=(int *)malloc((MaxMig+1)*sizeof(int));
   fullclust=(int **)malloc(seeds*sizeof(int*));
   for(i=0;i<seeds;i++)
     {
-      fullclust[i]=(int *)malloc((MaxMig+1)*sizeof(int));
-      for(j=0;j<MaxMig+1;j++)
+      fullclust[i]=(int *)malloc((maxMig+1)*sizeof(int));
+      for(j=0;j<maxMig+1;j++)
 	{
 	  fullclust[i][j]=1;
 	}
@@ -4233,15 +4253,15 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   observed=(int *)calloc(nseq,sizeof(int));
   initialzeroint(observed,nseq);
 
-  tempCe=(int *)calloc((int)MaxMig,sizeof(int));
-  tempce=(int *)calloc((MaxMig),sizeof(int));
+  tempCe=(int *)calloc((int)maxMig,sizeof(int));
+  tempce=(int *)calloc((maxMig),sizeof(int));
 
-  tempmean=(double **)calloc((MaxMig+1),sizeof(double*));
-  tempMean=(double **)calloc((MaxMig+1),sizeof(double*));
-  tempmu=(double **)calloc((MaxMig+1),sizeof(double*));
-  tempMu=(double **)calloc((MaxMig+1),sizeof(double*));
+  tempmean=(double **)calloc((maxMig+1),sizeof(double*));
+  tempMean=(double **)calloc((maxMig+1),sizeof(double*));
+  tempmu=(double **)calloc((maxMig+1),sizeof(double*));
+  tempMu=(double **)calloc((maxMig+1),sizeof(double*));
 
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       tempmean[i]=(double *)calloc(dim,sizeof(double));
       tempMean[i]=(double *)calloc(dim,sizeof(double));
@@ -4249,16 +4269,16 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       tempMu[i]=(double *)calloc(dim,sizeof(double));
     }
 
-  tempsize=(int *)calloc((MaxMig+1),sizeof(int));
-  tempSize=(int *)calloc((MaxMig+1),sizeof(int));
+  tempsize=(int *)calloc((maxMig+1),sizeof(int));
+  tempSize=(int *)calloc((maxMig+1),sizeof(int));
 
-  tempmixes=(double **)calloc((MaxMig+1),sizeof(double *));
-  tempMixes=(double **)calloc((MaxMig+1),sizeof(double *));
+  tempmixes=(double **)calloc((maxMig+1),sizeof(double *));
+  tempMixes=(double **)calloc((maxMig+1),sizeof(double *));
      
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
-      tempmixes[i]=(double *)calloc((MaxMig+1),sizeof(double));
-      tempMixes[i]=(double *)calloc((MaxMig+1),sizeof(double));
+      tempmixes[i]=(double *)calloc((maxMig+1),sizeof(double));
+      tempMixes[i]=(double *)calloc((maxMig+1),sizeof(double));
     }
     
   tempindic=(int **)calloc(nseq,sizeof(int*));
@@ -4270,12 +4290,12 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       tempIndic[i]=(int *)calloc(nseqmax,sizeof(int));
     }
   
-  temptau=(double ***)calloc((MaxMig+1),sizeof(double**));
-  tempTau=(double ***)calloc((MaxMig+1),sizeof(double**));
+  temptau=(double ***)calloc((maxMig+1),sizeof(double**));
+  tempTau=(double ***)calloc((maxMig+1),sizeof(double**));
  
     
-  //tautotal=(double ***)calloc((MaxMig+1),sizeof(double**));
-  for(i=0;i<MaxMig+1;i++)
+  //tautotal=(double ***)calloc((maxMig+1),sizeof(double**));
+  for(i=0;i<maxMig+1;i++)
     {
       temptau[i]=(double **)calloc(dim,sizeof(double*));
       tempTau[i]=(double **)calloc(dim,sizeof(double*));
@@ -4288,17 +4308,17 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}
     }
     
-  siztotal=(int *)calloc((MaxMig+1),sizeof(int));
+  siztotal=(int *)calloc((maxMig+1),sizeof(int));
 
   proposalprobs=(double **)malloc(2*sizeof(double *));
   for(i=0;i<2;i++)
     {
-      proposalprobs[i]=(double *)malloc((MaxMig+1)*sizeof(double));
+      proposalprobs[i]=(double *)malloc((maxMig+1)*sizeof(double));
     }
 
   
-  p=(double *)calloc((MaxMig+1),sizeof(double));
-  pprop=(double *)calloc((MaxMig+1),sizeof(double));
+  p=(double *)calloc((maxMig+1),sizeof(double));
+  pprop=(double *)calloc((maxMig+1),sizeof(double));
   
   normalization=(double **)calloc(dim,sizeof(double*));
   for(i=0;i<dim;i++)
@@ -4306,18 +4326,18 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       normalization[i]=(double *)calloc(2,sizeof(double));
     }
 
-  mixx=(double **)calloc((MaxMig+1),sizeof(double *));
-  Mixx=(double **)calloc((MaxMig+1),sizeof(double *));
-  mixxtot=(double **)calloc((MaxMig+1),sizeof(double *));
-  for(i=0;i<MaxMig+1;i++)
+  mixx=(double **)calloc((maxMig+1),sizeof(double *));
+  Mixx=(double **)calloc((maxMig+1),sizeof(double *));
+  mixxtot=(double **)calloc((maxMig+1),sizeof(double *));
+  for(i=0;i<maxMig+1;i++)
     {
-      mixx[i]=(double *)calloc((MaxMig+1),sizeof(double));
-      Mixx[i]=(double *)calloc((MaxMig+1),sizeof(double));
-      mixxtot[i]=(double *)calloc((MaxMig+1),sizeof(double));
+      mixx[i]=(double *)calloc((maxMig+1),sizeof(double));
+      Mixx[i]=(double *)calloc((maxMig+1),sizeof(double));
+      mixxtot[i]=(double *)calloc((maxMig+1),sizeof(double));
     }
 
   commut=(int **)calloc(nseq,sizeof(int*));
-  howmany=(int *)calloc((MaxMig-Minmut+1),sizeof(int));
+  howmany=(int *)calloc((maxMig-Minmut+1),sizeof(int));
 
   data=(double ***)calloc(nseq,sizeof(double**));
   for(i=0;i<nseq;i++)
@@ -4329,13 +4349,13 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}      
     }
   
-  mean=(double **)calloc((MaxMig+1),sizeof(double*));
-  Mean=(double **)calloc((MaxMig+1),sizeof(double*));
-  mu=(double **)calloc((MaxMig+1),sizeof(double*));
-  Mu=(double **)calloc((MaxMig+1),sizeof(double*));
-  TempMu=(double **)calloc((MaxMig+1),sizeof(double*));
-  mutotal=(double **)calloc((MaxMig+1),sizeof(double*));
-  for(i=0;i<MaxMig+1;i++)
+  mean=(double **)calloc((maxMig+1),sizeof(double*));
+  Mean=(double **)calloc((maxMig+1),sizeof(double*));
+  mu=(double **)calloc((maxMig+1),sizeof(double*));
+  Mu=(double **)calloc((maxMig+1),sizeof(double*));
+  TempMu=(double **)calloc((maxMig+1),sizeof(double*));
+  mutotal=(double **)calloc((maxMig+1),sizeof(double*));
+  for(i=0;i<maxMig+1;i++)
     {
       mean[i]=(double *)calloc(dim,sizeof(double));
       Mean[i]=(double *)calloc(dim,sizeof(double));
@@ -4345,8 +4365,8 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       mutotal[i]=(double *)calloc(dim,sizeof(double));
     }
   
-  mutot=(double ***)calloc((MaxMig+1),sizeof(double**));
-  for(i=0;i<MaxMig+1;i++)
+  mutot=(double ***)calloc((maxMig+1),sizeof(double**));
+  for(i=0;i<maxMig+1;i++)
     {
       mutot[i]=(double **)calloc(dim,sizeof(double*));
       for(j=0;j<dim;j++)
@@ -4355,16 +4375,16 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}
     }
   
-  groupfreq=(double **)calloc((locno),sizeof(double*));
-  for(i=0;i<locno;i++)
+  groupfreq=(double **)calloc((locNo),sizeof(double*));
+  for(i=0;i<locNo;i++)
     {
-      groupfreq[i]=(double *)calloc((MaxMig+1),sizeof(double));
+      groupfreq[i]=(double *)calloc((maxMig+1),sizeof(double));
     } 
 
-  tau=(double ***)calloc((MaxMig+1),sizeof(double**));
-  Tau=(double ***)calloc((MaxMig+1),sizeof(double**));
-  TempTau=(double ***)calloc((MaxMig+1),sizeof(double**));
-  for(i=0;i<MaxMig+1;i++)
+  tau=(double ***)calloc((maxMig+1),sizeof(double**));
+  Tau=(double ***)calloc((maxMig+1),sizeof(double**));
+  TempTau=(double ***)calloc((maxMig+1),sizeof(double**));
+  for(i=0;i<maxMig+1;i++)
     {
       tau[i]=(double **)calloc(dim,sizeof(double*));
       Tau[i]=(double **)calloc(dim,sizeof(double*));
@@ -4383,7 +4403,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       tautotal[i]=(double **)calloc(dim,sizeof(double *));
       for(j=0;j<dim;j++)
 	{
-	  tautotal[i][j]=(double *)calloc((MaxMig+1),sizeof(double));
+	  tautotal[i][j]=(double *)calloc((maxMig+1),sizeof(double));
 	}
     }
 
@@ -4393,8 +4413,8 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       tautot[i]=(double ***)calloc(dim,sizeof(double**));
       for(j=0;j<dim;j++)
 	{
-	  tautot[i][j]=(double **)calloc((MaxMig+1),sizeof(double*));
-	  for(l=0;l<MaxMig+1;l++)
+	  tautot[i][j]=(double **)calloc((maxMig+1),sizeof(double*));
+	  for(l=0;l<maxMig+1;l++)
 	    {
 	      tautot[i][j][l]=(double *)calloc(seeds,sizeof(double));
 	    }
@@ -4430,15 +4450,15 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}
     }
   
-  loc=(double **)calloc(locno,sizeof(double *));
+  loc=(double **)calloc(locNo,sizeof(double *));
   
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
-      loc[i]=(double *)calloc((dim+1+MaxLoc*locno),sizeof(double));
+      loc[i]=(double *)calloc((dim+1+maxLoc*locNo),sizeof(double));
     }
  
-  maxmig[0]=(int)MaxMig;
-  maxmig[1]=(int)MaxMig;
+  maxmig[0]=(int)maxMig;
+  maxmig[1]=(int)maxMig;
 
   for(i=0;i<dim;i++)
     {
@@ -4458,33 +4478,31 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     }  
 
   /*scan sequences, length etc from haplotypefile.nex*/
-  countinit=(int)SeqCountR[0];
+  countinit=(int)seqCountR[0];
   count=countinit;
   samsize=countinit; 
 
-  TT=(char **)calloc(nseq,sizeof(char*));
-  t=(char **)calloc(nseq,sizeof(char*));
-  // T=(char **)calloc((4*n),sizeof(char*));
-  for(i=0;i<nseq;i++)
+  TT=(char **)malloc((nseq+10)*sizeof(char *)); 
+  t=(char **)malloc((nseq+10)*sizeof(char*));
+
+  for(i=0;i<nseq+10;i++)
     {
-      TT[i]=(char *)calloc((length+1),sizeof(char));
-      t[i]=(char *)calloc((length+1),sizeof(char));
+      TT[i]=(char *)malloc((length+1)*sizeof(char));
+      t[i]=(char *)malloc((length+1)*sizeof(char));
       //  T[i]=(char *)calloc((length+1),sizeof(char));
     }
 
-  S=(char *)calloc((length+1),sizeof(char));
-  included=(int **)calloc(nseq,sizeof(int*));
-  
-  size=(int *)calloc((MaxMig+1),sizeof(int));
-  Size=(int *)calloc((MaxMig+1),sizeof(int));
+  //  S=(char *)malloc((length+1)*sizeof(char));
+   
+  size=(int *)calloc((maxMig+1),sizeof(int));
+  Size=(int *)calloc((maxMig+1),sizeof(int));
 
-  datsiz=(int *)calloc(nseq,sizeof(int));
-  initialzeroint(datsiz,nseq);
+  datsiz=(int *)calloc(nseq+10,sizeof(int));
 
   snp=(int *)calloc((length+1),sizeof(int));
   snpposition=(int *)calloc((length+1),sizeof(int));
   
-  seqsfile=(int *)calloc(count,sizeof(int));
+  seqsFile=(int *)calloc(count,sizeof(int));
  
   /*First we scan the sequences:*/  
   if(abs(ignoreunknown-1)<0.5)
@@ -4556,38 +4574,39 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}
       free(don);
       free(other);	
-      if(flag==1&&ModeInitial[0]<0.5)
+      if(flag==1&&modeInitial[0]<0.5)
 	{
 	  Rprintf("Attention: the .nex file contains unknown nucleotides, these will be ignored.\n");
+	  R_FlushConsole();
 	}	
       //the one above sets the unknown as the most popular, whereas the one below sets them as the closest sequence ones.     
     }
 
   Temp=0;
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
       for(j=1;j<dim+1;j++)
 	{
-	  loc[i][j]=(double)CoordsLocsR[Temp];
+	  loc[i][j]=(double)coordsLocsR[Temp];
 	  Temp=Temp+1;
 	}
       flag=0;
       loc[i][0]=0;
       for(j=0;;j++)
 	{
-	  if(CoordsLocsR[Temp]>=0)
+	  if(coordsLocsR[Temp]>=0)
 	    {
-	      loc[i][dim+1+j]=(double)CoordsLocsR[Temp];
+	      loc[i][dim+1+j]=(double)coordsLocsR[Temp];
 	      loc[i][0]=loc[i][0]+1;
 	      Temp=Temp+1;
 	      continue;
 	    }	  
-	  if((int)CoordsLocsR[Temp]==-1)
+	  if((int)coordsLocsR[Temp]==-1)
 	    {
 	      Temp=Temp+1;
 	      continue;
 	    }
-	  if((int)CoordsLocsR[Temp]==-2)
+	  if((int)coordsLocsR[Temp]==-2)
 	    {
 	      Temp=Temp+1;
 	      break;
@@ -4641,25 +4660,25 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   don=(int *)calloc(samsize,sizeof(int));
   various=(int *)calloc(samsize*5,sizeof(int));
       
-  SeqLabels=(int *)calloc(samsize*5,sizeof(int));
+  seqLabels=(int *)calloc(samsize*5,sizeof(int));
  
   for(i=0;i<samsize;i++)
     {    
-      seqsfile[i]=(int)seqsfileR[i];
-      //don[i]=seqsfile[i];
+      seqsFile[i]=(int)seqsFileR[i];
+      //don[i]=seqsFile[i];
       // various[don[i]]=i;
-      SeqLabels[i]=seqsfile[i];
-      //  Rprintf("seqsfile[%d] is %d SeqLabels %d\n",i,seqsfile[i],SeqLabels[i]);
+      seqLabels[i]=seqsFile[i];
+      //  Rprintf("seqsFile[%d] is %d seqLabels %d\n",i,seqsFile[i],seqLabels[i]);
     }
 
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
       // Rprintf("\nlocation %d becomes: ",i+1); 
       for(j=dim+1;j<loc[i][0]+1+dim;j++)
 	{
 	  for(w=0;w<samsize;w++)
 	    {
-	      if(seqsfile[w]==(int)loc[i][j])
+	      if(seqsFile[w]==(int)loc[i][j])
 		{
 		  loc[i][j]=(double)w+1;
 		  break;
@@ -4669,7 +4688,8 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	    }
 	  if(w==samsize+1)
 	    {
-	      Rprintf("Haplotype %d appears in CoordsLocs, but no such labels appears in the sequence file. \nThe MCMC will not be run.\n",(int)loc[i][j]);
+	      Rprintf("Haplotype %d appears in coordsLocs, but no such labels appears in the sequence file. \nThe MCMC will not be run.\n",(int)loc[i][j]);
+	      R_FlushConsole();
 	      goto veryend;
 	    }
 	  //  Rprintf("%d ",(int)loc[i][j]);
@@ -4692,7 +4712,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   for(i=0;i<count;i++)
     {
       var1=0;
-      for(j=0;j<locno;j++)
+      for(j=0;j<locNo;j++)
 	{
 	  for(l=dim+1;l<dim+1+loc[j][0];l++)
 	    {
@@ -4727,14 +4747,14 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	      if(have(T[i],T[j])==1)
 		{
 		  various[j]=i;
-		  //		  fprintf(my_file1,"%d\t%d\n",SeqLabels[j],SeqLabels[i]);
+		  //		  fprintf(my_file1,"%d\t%d\n",seqLabels[j],seqLabels[i]);
 		  //Rprintf("%d and %d are identical\n",i,j);
 		  Temp=Temp-1;
 		  identi[j]=1;
 		  datsiz[i]=datsiz[i]+datsiz[j];
 		  datsiz[j]=0;
 			  			
-		  for(l=0;l<locno;l++)
+		  for(l=0;l<locNo;l++)
 		    {
 		      for(k=dim+1;k<loc[l][0]+dim+1;k++)
 			{
@@ -4753,8 +4773,8 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 
   for(i=0;i<count;i++)
     {
-      //      fprintf(my_file1,"%d\t\t%d\n",SeqLabels[i],SeqLabels[various[i]]);
-      //SeqCorrR[i]=(double)SeqLabels[various[i]];
+      //      fprintf(my_file1,"%d\t\t%d\n",seqLabels[i],seqLabels[various[i]]);
+      //SeqCorrR[i]=(double)seqLabels[various[i]];
     }
   free(various);
   
@@ -4902,12 +4922,12 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       //      w=0;
       for(j=0;j<countsnp;j++)
 	{	  
-	  SeqR[w][0]=T[i][j];
+	  seqR[w][0]=T[i][j];
 	  w=w+1;
 	}
     }
   
-  SeqLengthR[0] = (double)countsnp; 
+  seqLengthR[0] = (double)countsnp; 
 
   length=countsnp;
 
@@ -4930,7 +4950,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   for(i=0;i<count;i++)
     {
       var1=0;
-      for(j=0;j<locno;j++)
+      for(j=0;j<locNo;j++)
 	{
 	  for(l=dim+1;l<dim+1+loc[j][0];l++)
 	    {
@@ -4961,7 +4981,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		  identi[j]=1;
 		  datsiz[i]=datsiz[i]+datsiz[j];
 		  datsiz[j]=0;
-		  for(l=0;l<locno;l++)
+		  for(l=0;l<locNo;l++)
 		    {
 		      for(k=dim+1;k<loc[l][0]+dim+1;k++)
 			{
@@ -4990,12 +5010,12 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       if(identi[i]==0)
 	{
 	  datsiz[l]=datsiz[i];
-	  SeqLabelsR[l]=i+1;
+	  seqLabelsR[l]=i+1;
 	  for(k=0;k<length;k++)
 	    {
 	      T[l][k]=T[i][k];
 	    }
-	  for(k=0;k<locno;k++)
+	  for(k=0;k<locNo;k++)
 	    {
 	      for(j=dim+1;j<loc[k][0]+dim+1;j++)
 		{
@@ -5026,14 +5046,17 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   count=l;
   countinit=l;
      
-  if(ModeInitial[0]<0.5)
+  if(modeInitial[0]<0.5)
     {
       Rprintf("Inferring possible missing sequences...");
+      R_FlushConsole();
     }
-  if(ModeInitial[0]>0.5)
+  if(modeInitial[0]>0.5)
     {
       Rprintf("\nStarting BPEC...\n");
+      R_FlushConsole();
     }
+
   //scan in the locations. loc[i][0] shows how many haplotypes found in that region, loc[i][1] is x-coord, loc[i][2] is y-cord and loc[i][3]... are the haplotypes.
   free(Group);
   free(group);
@@ -5047,9 +5070,10 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       smallots[i]=(int *)calloc(nseq,sizeof(int));
     }
  countagain:
-  if(count%10==0&&ModeInitial[0]<0.5)
+ 
+  if(count%10==0&&modeInitial[0]<0.5)
     {
-      Rprintf(".");                                                                                           
+      Rprintf(".");         
     }
   R_CheckUserInterrupt();
 
@@ -5062,6 +5086,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   tempclado=(int *) calloc(count*count,sizeof(int));
   mutnpos=(int *) calloc(count*count,sizeof(int));
   Mutnpos=(int *) calloc(count*count,sizeof(int));
+
 
   /*ok, below starts the process of making the graph connected*/
   for(i=0;i<count;i++)
@@ -5088,6 +5113,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	      if(identify(T[i][k])<0)
 		{
 		  Rprintf("%c vs %c for position %d count is %d samsize %d length %d\n",T[i][k],T[j][k],k,count,samsize,length);
+		  R_FlushConsole();
 		  goto veryend;
 		}
 	      if(identify(T[i][k])!=identify(T[j][k]))
@@ -5129,15 +5155,20 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}
     }
   groupno=j; /*so groups are 0...j-1 ie j of them*/
- 
+
+
+  //  Rprintf("count is %d, countinit is %d, groupno is %d\n",count,countinit,groupno); 
+
+
   if(count%100==0)
     {
       //      Rprintf("Inferring missing sequences...\n");
     }
   if(count>countinit*5)
     {
-      errorcodeR[0]=1;
+      errorCodeR[0]=1;
       Rprintf("\nYour dataset contains too many sequences that are several mutations apart, without any intermediate sequences available (i.e.,deep divergence); inferences will be unreliable, the program will now exit\n");
+      R_FlushConsole();
       goto veryend;
     }
 
@@ -5169,6 +5200,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		  if(identify(T[i][k])<0)
 		    {
 		      Rprintf("%c vs %c for position %d\n",T[i][k],T[j][k],k);
+		      R_FlushConsole();
 		      goto veryend;
 		    }
 		  if(identify(T[i][k])!=identify(T[j][k]))
@@ -5386,7 +5418,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		{
 		  store1=various[3];
 		  store2=various[4];
-
 		  for(various[0]=0;various[0]<various[2];various[0]++)
 		    {
 		      for(various[1]=various[0]+1;various[1]<various[2];various[1]++)
@@ -5527,7 +5558,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 						}
 					    }
 					}
-			  
 				      /*now, here is the problem. it could be that 3 groups have a common rep but we need TWO new nodes. then the MUTATION variable later will not give us anything nice. in that case we need to find how few which reps actually have a common missing and which don't... argmnt.*/
 			  
 				      otherno=k;
@@ -5596,7 +5626,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 					      smallots[i][j]=0;
 					    }
 					}			  			  
-				      //ok, for each position want to check how many consecutive others contain it. and for each category (ie. distance) we want to find in how many group of that category this mutation position appears in. 
+				      //ok, for each position want to check how many consecutive others contain it. and for each category (ie. distance) we want to find in how many groups of that category this mutation position appears in. 
 			  
 				      for(i=0;i<length;i++)
 					{
@@ -5634,7 +5664,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 						  if(rep[group[other[j]]][group[common]][2]>=countsnp)
 						    {
 						      Rprintf("problem1 for groups[%d] (ie the common is %d and the other 0 is %d) %d and %d",j,common,other[0],group[other[j]],group[common]);
-						      //R_FlushConsole();
+						      R_FlushConsole();
 						      goto veryend;
 						    }
 						  cat[i]=rep[group[other[j]]][group[common]][2];
@@ -5645,9 +5675,9 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 						  cat[i]=rep[group[other[j]]][group[common]][2];
 						  if(rep[group[other[j]]][group[common]][2]>=countsnp)
 						    {
-						      Rprintf("rep %d of %d and %d countsnp %d\n",rep[group[other[j]]][group[common]][2],group[other[j]],group[common],countsnp);
-						      Rprintf("problem2 between %d and %d groups %d and %d\n",other[j],common,group[other[j]],group[common]);
-						      goto veryend;
+						      // Rprintf("rep %d of %d and %d countsnp %d\n",rep[group[other[j]]][group[common]][2],group[other[j]],group[common],countsnp);
+						      //				      Rprintf("problem2 between %d and %d groups %d and %d\n",other[j],common,group[other[j]],group[common]);
+						      //	      goto veryend;
 						    }
 						  //cat is the maximum disatnce in which a mutation appears without miss. hmm, may not quite work. dammit. grrr
 						}
@@ -5657,7 +5687,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 					{
 					  lots[i]=-100000;
 					}
-			  
 				      temp=-1;
 				      for(i=0;i<length;i++)
 					{
@@ -5706,7 +5735,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 					      lots[i]=0;
 					    }
 					}
-					   		  
 				      //so we are only looking at the ones which have the maximum number of stuff in smallest categories	   	  
 				      /*so now we have found all the mutation intermediates between the common one and the other ones. we now want to find which number occurs most often*/
 				      for(j=0;j<otherno;j++)
@@ -5770,7 +5798,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 					      break;
 					    }
 					}
-					      
 				      datsiz[count]=0;
 				      flag=0;
 				      flag1=0;
@@ -5821,8 +5848,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 				    {
 				      Group[i]=-1;
 				    }			  
-
-
 				  free(clado);
 				  free(tempclado);
 				  clado=(int *)calloc(count*count,sizeof(int));
@@ -5878,12 +5903,11 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
  noneed:
    
   countR[0]=count;
-
   for(i=0;i<count;i++)
     {
       datsiz[i]=0;
     }
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
       for(j=dim+1;j<loc[i][0]+dim+1;j++)
 	{
@@ -5893,10 +5917,10 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 
   for(i=0;i<count;i++)
     {
-      NoSamplesR[i]=datsiz[i];
+      noSamplesR[i]=datsiz[i];
     }
 
-  if(ModeInitial[0]>0.5)
+  if(modeInitial[0]>0.5)
     {
       free(minlooppoint);
       free(templpoint);
@@ -5950,7 +5974,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       free(tempmat2);
       free(tempmat3);
  
-       free(psimat);
+      free(psimat);
       free(vecvecdata);
       free(muprior);
 
@@ -5965,7 +5989,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 
       free(proposalprobs);
 
-      for(i=0;i<MaxMig+1;i++)
+      for(i=0;i<maxMig+1;i++)
 	{
 	  free(tempmean[i]);
 	  free(tempMean[i]);
@@ -5981,7 +6005,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       free(tempmixes);
       free(tempMixes);
 
-      for(i=0;i<MaxMig+1;i++)
+      for(i=0;i<maxMig+1;i++)
 	{
 	  free(mean[i]);
 	  free(Mean[i]);
@@ -6014,7 +6038,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       free(snp);
       free(snpposition);
 
-      for(i=0;i<MaxMig+1;i++)
+      for(i=0;i<maxMig+1;i++)
 	{
 	  for(j=0;j<dim;j++)
 	    {
@@ -6045,7 +6069,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	  free(data[i]);
 	}
       free(data);
-      for(i=0;i<MaxMig+1;i++)
+      for(i=0;i<maxMig+1;i++)
 	{
 	  //	  free(centrall[i]);
 	  //  free(Centrall[i]);
@@ -6058,7 +6082,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       free(Mixx);
       free(mixxtot);
 
-      for(i=0;i<MaxMig+1;i++)
+      for(i=0;i<maxMig+1;i++)
 	{
 	  for(j=0;j<dim;j++)
 	    {
@@ -6068,12 +6092,12 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}
       free(mutot);
 
-      free(seqsfile);
+      free(seqsFile);
       for(i=0;i<dim;i++)
 	{
 	  for(j=0;j<dim;j++)
 	    {
-	      for(l=0;l<MaxMig+1;l++)
+	      for(l=0;l<maxMig+1;l++)
 		{
 		  free(tautot[i][j][l]);
 		}
@@ -6083,21 +6107,21 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}
       free(tautot);
 
-      for(i=0;i<locno;i++)
+      for(i=0;i<locNo;i++)
 	{
 	  free(groupfreq[i]);
 	}
 
       free(groupfreq);
 
-      for(i=0;i<locno;i++)
+      for(i=0;i<locNo;i++)
 	{
 	  free(loc[i]);
 	}
       free(sitehits);
       free(loc);
 
-      free(SeqLabels);
+      free(seqLabels);
      
       free(observed);
       free(datsiz);
@@ -6119,7 +6143,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 
       for(i=0;i<count+loopno-1;i++)
 	{
-	  free(edge[i]);
+	  //	  free(edge[i]);
 	}
       free(edge);
 
@@ -6128,7 +6152,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       free(distance);
       free(mutnpos);
       free(Mutnpos);
-      for(i=0;i<nseq;i++)
+      for(i=0;i<nseq+10;i++)
 	{
 	  free(TT[i]);
 	  free(t[i]);
@@ -6161,7 +6185,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       free(quickclado);
       free(quickedges);
 
-
+      free(totalancestral);
 
       goto veryend;
     }
@@ -6185,31 +6209,36 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     }
   Rprintf("Counting loops in the network...\n");
 
-  if(locno>0.5)
-    {	  	  
+  R_FlushConsole();
+
+  if(locNo>0.5)
+    {	  
       for(w=0;w<dim;w++)
 	{
 	  temp=0;
-	  for(i=0;i<locno;i++)
+	  for(i=0;i<locNo;i++)
 	    {
 	      temp=temp+loc[i][w+1];
 	    }
-	  temp=temp/locno;
+	  temp=temp/locNo;
 	  normalization[w][0]=temp;
-	  for(i=0;i<locno;i++)
+	
+	  //  normalization[0][0] = 28.50823;
+	  //  normalization[1][0] = -16.3312;
+	  for(i=0;i<locNo;i++)
 	    {
-	      loc[i][w+1]=loc[i][w+1]-temp;
+	      loc[i][w+1]=loc[i][w+1]-normalization[w][0];
 	    }
 	    
 	  if(w>1)
 	    {
 	      temp=0;                                                                                                                                                           
-	      for(i=0;i<locno;i++)   
+	      for(i=0;i<locNo;i++)   
 		{      
 		  temp=temp+loc[i][w+1]*loc[i][w+1];   
 		}                                                                                                                                                                                         
-	      temp=temp/locno;
-	      for(i=0;i<locno;i++)
+	      temp=temp/locNo;
+	      for(i=0;i<locNo;i++)
 		{
 		  loc[i][w+1]=loc[i][w+1]/sqrt(temp);
 		}
@@ -6219,14 +6248,15 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	  if(w==1)
 	    {
 	      temp=0;                                                                                                                                                           
-	      for(i=0;i<locno;i++)   
+	      for(i=0;i<locNo;i++)   
 		{      
 		  temp=temp+loc[i][w+1]*loc[i][w+1]+loc[i][w]*loc[i][w];   
 		}                                                                                                                                                                                         
-	      temp=temp/locno/2;
+	      temp=temp/locNo/2;
+	      //      temp = (0.058895)*(0.058895);
 	      normalization[0][1]=sqrt(temp);
 	      normalization[1][1]=sqrt(temp);
-	      for(i=0;i<locno;i++)       
+	      for(i=0;i<locNo;i++)       
 		{                
 		  loc[i][w]=loc[i][w]/sqrt(temp);   
 		  loc[i][w+1]=loc[i][w+1]/sqrt(temp);
@@ -6235,20 +6265,20 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}
     }
     
+
   other = (int *) calloc(count,sizeof(int));
-  // Rprintf("other has length %d\n",count);
+  // Rprintf("length of count is %d\n",count);
   for(i=0;i<count;i++)
     {
       other[i]=0;
     }
   Temp=0;      
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
       for(j=dim+1;j<loc[i][0]+dim+1;j++)
 	{
 	  for(w=0;w<dim;w++)
 	    {
-	      // Rprintf("loc[%d][%d] = %d data[%d][%d]\n",i,j,(int)loc[i][j],(int)loc[i][j]-1,other[(int)loc[i][j]-1]);
 	      R_FlushConsole();
 	      data[(int)loc[i][j]-1][other[(int)loc[i][j]-1]][w]=loc[i][w+1];
 	    }
@@ -6256,11 +6286,27 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	      
 	  haploc[(int)loc[i][j]-1][other[(int)loc[i][j]-1]]=i;
 	  other[(int)loc[i][j]-1]=other[(int)loc[i][j]-1]+1;
+	  // Rprintf("allocate %d\n",(int)loc[i][j]-1);
 	}
     }
       
   free(other);
+  Temp=0;
+  for(i=0;i<count;i++)
+    {
+      for(j=0;j<datsiz[i];j++)
+	{
+	  for(w=0;w<dim;w++)
+	    {
+	      LocDataR[Temp]=data[i][j][w]*normalization[w][1]+normalization[w][0];
+	      Temp=Temp+1;
+	    }
+	  //  Rprintf("data[%d][%d] = (%lf,%lf) Temp %d\n",i,j,data[i][j][0]*normalization[0][1]+normalization[0][0],data[i][j][1]*normalization[1][1]+normalization[1][0],Temp);
+	}
+    }
 
+
+  
   i=0;
   sitehits=(int *)calloc(length,sizeof(int));
   for(i=0;i<length;i++)
@@ -6290,8 +6336,8 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
  
   l=0;
      
-  fffneworder=(int *)calloc((MaxMig+2),sizeof(int*));
-  Fffneworder=(int *)calloc((MaxMig+2),sizeof(int*));
+  fffneworder=(int *)calloc((maxMig+2),sizeof(int*));
+  Fffneworder=(int *)calloc((maxMig+2),sizeof(int*));
       
   for(i=0;i<maxmig[0]+2;i++)
     {
@@ -6300,7 +6346,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     }
 
 
- historyorder=(int **)calloc(rootsamples,sizeof(int*));
+  historyorder=(int **)calloc(rootsamples,sizeof(int*));
   Historyorder=(int **)calloc(rootsamples,sizeof(int*));
 
   for(i=0;i<rootsamples;i++)
@@ -6349,7 +6395,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     }
     else
     {
-    fprintf(my_file1,"'%d' ",SeqLabels[i]);
+    fprintf(my_file1,"'%d' ",seqLabels[i]);
     }
     
     if(i+1<10)
@@ -6398,8 +6444,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       for(j=i;j<count;j++)
 	{
 	  if(clado[i*count+j]==1)
-	    {
-	     
+	    {	     
 	      edge[l]=(int *) calloc(3,sizeof(int));
 		  
 	      for(k=0;k<length;k++)
@@ -6427,8 +6472,8 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   Centrall=(int **)calloc(count,sizeof(int*));
   for(i=0;i<count;i++)
     {
-      centrall[i]=(int *)calloc((MaxMig+1),sizeof(int));
-      Centrall[i]=(int *)calloc((MaxMig+1),sizeof(int));
+      centrall[i]=(int *)calloc((maxMig+1),sizeof(int));
+      Centrall[i]=(int *)calloc((maxMig+1),sizeof(int));
     }
   tempGroups=(int *)calloc((count),sizeof(int));
   tempgroups=(int *)calloc((count),sizeof(int));
@@ -6437,11 +6482,11 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   tempCentralls=(int **)calloc(count,sizeof(int*));
   for(i=0;i<count;i++)
     {
-      tempcentralls[i]=(int *)calloc((MaxMig+1),sizeof(int));
-      tempCentralls[i]=(int *)calloc((MaxMig+1),sizeof(int));
+      tempcentralls[i]=(int *)calloc((maxMig+1),sizeof(int));
+      tempCentralls[i]=(int *)calloc((maxMig+1),sizeof(int));
     }
 
-  EdgeTotalProb=(double *)calloc(count*count,sizeof(double));
+  edgeTotalProb=(double *)calloc(count*count,sizeof(double));
 
   for(k=0;k<count;k++)
     {
@@ -7049,7 +7094,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     }
   else
     {
-      Rprintf("\nThe program will resolve %d loops in the network\n",loopno);
+      Rprintf("\nBPEC will resolve %d loops in the network\n",loopno);
       R_FlushConsole();
     }
 
@@ -7278,7 +7323,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     }
         
   //first i want to GENERATE different data for certain clades.
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       Size[i]=1;
       
@@ -7308,9 +7353,9 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   //first we pick var at random from a gamma, since independent do all at once
   //now we pick an edge at random   
   
-  Rank=(int *) calloc((MaxMig+1),sizeof(int));
+  Rank=(int *) calloc((maxMig+1),sizeof(int));
 
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       Rank[i]=i;
     }
@@ -7339,9 +7384,9 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     }
       	 
 	
-  ancestrallocation=(double *)calloc(locno,sizeof(double));
+  ancestrallocation=(double *)calloc(locNo,sizeof(double));
 
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
       ancestrallocation[i]=0;
     }
@@ -7350,7 +7395,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     {
       for(j=0;j<count;j++)
 	{
-	  EdgeTotalProb[i*count+j]=0;
+	  edgeTotalProb[i*count+j]=0;
 	}
     }
  
@@ -7730,22 +7775,22 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       homototal[i]=0;
     }
       
-  clusterprobs=(double *)calloc(count*(MaxMig+1),sizeof(double));
+  clusterprobs=(double *)calloc(count*(maxMig+1),sizeof(double));
   indicprobs=(double ***)calloc(count,sizeof(double**));
   for(i=0;i<count;i++)
     {
       indicprobs[i]=(double **)calloc(datsiz[i],sizeof(double*));
       for(j=0;j<datsiz[i];j++)
 	{
-	  indicprobs[i][j]=(double *)calloc((MaxMig+1),sizeof(double));
+	  indicprobs[i][j]=(double *)calloc((maxMig+1),sizeof(double));
 	}
     }	
 
   for(i=0;i<count;i++)
     {
-      for(j=0;j<MaxMig+1;j++)
+      for(j=0;j<maxMig+1;j++)
 	{
-	  clusterprobs[i*(MaxMig+1)+j]=0;
+	  clusterprobs[i*(maxMig+1)+j]=0;
 	}
     }
    
@@ -7807,7 +7852,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     }
 
   maxProd=-10000000;
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       siztotal[i]=0;
       for(j=0;j<dim;j++)
@@ -7835,11 +7880,11 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       //      Rprintf("leaf distance %d is %d\n",i,leafdistance[i]);
     }
 
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
       if(loc[i][0]>0)
 	{
-	  for(j=i+1;j<locno;j++)
+	  for(j=i+1;j<locNo;j++)
 	    {
 	      if(fabs(loc[i][1]-loc[j][1])<0.001&&fabs(loc[i][2]-loc[j][2])<0.001&&loc[j][0]>0)
 		{
@@ -7855,7 +7900,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}
     }
 
-  Rprintf("\nNumber of iterations is %d\nNumber of saved iterations %d\nSample size is %d\nEffective sequence length is %d\nTotal number of haplotypes (including missing) %d\nDimension is %d\nParsimony relaxation is %d\nMaximum number of migrations is %d\n\n",(int)iter,(int)PostSamples,(int)samsize,(int)length,count,(int)dim,treesizedistance,MaxMig);
+  Rprintf("\nNumber of iterations is %d\nNumber of saved iterations %d\nSample size is %d\nEffective sequence length is %d\nTotal number of haplotypes (including missing) %d\nDimension is %d\nParsimony relaxation is %d\nMaximum number of migrations is %d\n\n",(int)iter,(int)postSamples,(int)samsize,(int)length,count,(int)dim,treesizedistance,maxMig);
    
   totalcount=0;
   for(i=0;i<count;i++)
@@ -7863,9 +7908,9 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       totalcount=totalcount+datsiz[i]+1;
     }
   int PostSieve,PostCounterMean=0,PostCounterCov=0,PostCounterIndex=0,PostCounterClusterCoda=0,PostCounterRootCoda=0;
-  if(PostSamples>0)
+  if(postSamples>0)
     {
-      PostSieve=(int)floor((iter-burnin)/sieve/PostSamples);
+      PostSieve=(int)floor((iter-burnin)/sieve/postSamples);
       if(PostSieve<1)
 	{
 	  PostSieve=1;
@@ -7885,12 +7930,12 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       clusterweight=0.5;
       Clusterweight=0.5;
  	 
-      maxmig[0]=MaxMig;
-      maxmig[1]=MaxMig;
-      for(l=0;l<MaxMig+1;l++)
+      maxmig[0]=maxMig;
+      maxmig[1]=maxMig;
+      for(l=0;l<maxMig+1;l++)
 	{
 	  temp=0;
-	  //	  maxmig[0]=MaxMig;
+	  //	  maxmig[0]=maxMig;
 	  for(i=0;i<maxmig[0]+1;i++)
 	    {
 	      mixx[l][i]=guni();
@@ -7910,7 +7955,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	{
 	  Size[i]=0;
 	  //	  prod[i]=1;
-	  //	  prod[i+MaxMig+1]=1;
+	  //	  prod[i+maxMig+1]=1;
 	  size[i]=0;
 	}
 
@@ -8011,7 +8056,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       Temp=0;
       l=count-1;
       do{
-		   		    
 	longtemp=1000000000;
 	Temp=-1;
 	for(i=0;i<count;i++)
@@ -8046,7 +8090,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		  }
 	      }
 	  }
-	if(Temp<0)
+	if(Temp<0&&count>1)
 	  {
 	    Rprintf("line 13689 %d 26776 \n",Temp);	  
 	    goto veryend;;
@@ -8068,6 +8112,13 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		clado[Temp*count+j]=0;
 		break;
 	      }
+	  }
+	if(count==1)
+	  {
+	    root[0]=0;
+	    root[1]=0;
+	    mutorder[0][l]=0;
+	    Mutorder[0][l]=0;
 	  }
       }while(root[0]<0);
       for(i=0;i<rootsamples;i++)
@@ -8160,9 +8211,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	    for(q=0;q<maxmig[0];q++)
 	      {
 		do{
-		  //		  Rprintf("POOPshit");
-		  // R_FlushConsole();
-	
 		  flag=0;
 		  u=guni();
 		  do{
@@ -8188,7 +8236,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		}while(flag==1);
 	      }
 
-	    //		R_FlushConsole();
 	    for(l=0;l<maxmig[0];l++)
 	      {
 		group[ce[l]]=group[ce[l]]-1;
@@ -8223,10 +8270,16 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	    various=(int *)calloc(count,sizeof(int));//substitute for don. 		
 	    sorted=(int *)calloc(count,sizeof(int));
 	    ffnew=(int *)calloc(count,sizeof(int));
-	    //Rprintf("Allocate 20 counts!?!\n");
-	    don=(int *)calloc(20*count,sizeof(int));
-	    done=(int *)calloc(20*count,sizeof(int));
-		  
+	    if(count>1)
+	      {
+		don=(int *)calloc(20*count,sizeof(int));
+		done=(int *)calloc(20*count,sizeof(int));
+	      }
+	    else
+	      {
+		don=(int *)calloc(20*datsiz[0],sizeof(int));
+		done=(int *)calloc(20*datsiz[0],sizeof(int));
+	      }
 	    for(j=0;j<maxmig[0]+1;j++)
 	      {
 		other[j]=0;
@@ -8253,8 +8306,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	  
 	  
 	    do{
-	      //Rprintf("argmnt");
-	      //R_FlushConsole();
 	
 	      Temp=0;
 	      for(i=0;i<maxmig[0];i++)
@@ -8332,7 +8383,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	    free(various);
 	    free(other);
 	    free(ffnew);
-		   
 	    for(i=0;i<maxmig[0]+1;i++)
 	      {
 		size[i]=0;
@@ -8385,9 +8435,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 
       }while(flag1==1);
 	
-      // Rprintf("POOwnjiefbi;weP");
-      //R_FlushConsole();
-      if(abs(MaxMig)>0.5)
+      if(abs(maxMig)>0.5)
 	{
 	  for(i=0;i<count;i++)
 	    {
@@ -8437,7 +8485,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       // Rprintf("some stuff");
       //R_FlushConsole();
       //and now we want multinorm mu's
-      for(i=0;i<MaxMig+1;i++)
+      for(i=0;i<maxMig+1;i++)
 	{	      
 	  tempvec1=(double *)malloc(dim*sizeof(double));
 	  for(j=0;j<dim;j++)
@@ -8512,8 +8560,14 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	  undirect(quickclado);
 	}
 	
-      ww=100*countsnp;
-    
+      if(countsnp>0)
+	{
+	  ww=100*countsnp;
+	}
+      else
+	{
+	  ww=1;
+	}
       root[0]=(int)floor(count*guni());
       root[1]=root[0];
       direct(root[0],quickclado);
@@ -8586,7 +8640,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	}
       for(k=0;k<=iter;k++)
 	{
-	  for(i=maxmig[0]+1;i<MaxMig+1;i++)
+	  for(i=maxmig[0]+1;i<maxMig+1;i++)
 	    {
 	      Size[i]=0;
 	      size[i]=0;
@@ -8619,56 +8673,14 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	  if(k<iter/4)
 	    {
 	      clusterweight=Clusterweight;
-	    }
-	   
-	  /* if(onlynca<0.5&&k%100==0) */
-	  /*   { */
-	  /*     direct(root[0],quickclado); */
-	  /*     for(i=0;i<count;i++) */
-	  /* 	{ */
-	  /* 	  group[i]=-1; */
-	  /* 	  for(j=1;j<=quickclado[i][0];j++) */
-	  /* 	    { */
-	  /* 	      clado[i*count+quickclado[i][j]]=1; */
-	  /* 	    } */
-	  /* 	} */
-		  
-	  /*     for(i=0;i<loopno;i++) */
-	  /* 	{ */
-	  /* 	  clado[Deletedge[2*i+1]*count+Deletedge[2*i]]=0; */
-	  /* 	  clado[Deletedge[2*i]*count+Deletedge[2*i+1]]=0; */
-	  /* 	} */
-		  
-		  
-	  /*     undirect(quickclado); */
-	  /*     direct(root[0],quickclado); */
-	  /*     mutorder[0]=root[0]; */
-		  
-	  /*     for(i=0;i<count;i++) */
-	  /* 	{ */
-	  /* 	  quickedges[i][0]=0; */
-	  /* 	  for(j=0;j<count;j++) */
-	  /* 	    { */
-	  /* 	      if(clado[i*count+j]==1) */
-	  /* 		{ */
-	  /* 		  quickedges[i][0]=quickedges[i][0]+1;  */
-	  /* 		  quickedges[i][quickedges[i][0]]=j; */
-	  /* 		} */
-	  /* 	    } */
-	  /* 	} */
-		  
-	  /*     undirect(quickclado); */
-	  /*     //	      root[0]=0; */
-	  /*     // root[1]=0; */
-	  /*   } */
-	
-	  //	  Rprintf("THE SEED CONTINUES");
-	  //R_FlushConsole();
-	  if(k%(iter/20)==0)
+	    }	   
+
+	  if(iter>20&&k%(iter/20)==0)
 	    {
 	      if(k/(iter/20)==0)
 		{
 		  Rprintf("\nChain %d: ",K+1);
+		  R_FlushConsole();
 		}
 	      if(k/(iter/20)>0)
 		{
@@ -8753,8 +8765,8 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    }
 		}
 	    }
-		
-	  if(k>=0)
+	  temp=0;
+	  if(k>=0&&count>1)
 	    {
 	      for(i=0;i<rootsamples;i++)
 		{
@@ -8796,11 +8808,18 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	  //  propose new ww
 	  //	  wwnew=gnorm(3*countsnp*10,100);
 	  //	  wwnew=(double)3*countsnp/100;
-	  wwnew=1000*(double)countsnp;
-	  //wwnew = 1;
-	  wwnew = 50;
-	  wwnew = 100*(double)countsnp;
-	  ww = wwnew;		     
+	  if(countsnp>0)
+	    {
+	      wwnew=1000*(double)countsnp;
+	      //wwnew = 1;
+	      wwnew = 50;
+	      wwnew = 100*(double)countsnp;
+	      ww = wwnew;	
+	    }
+	  else
+	    {
+	      wwnew=1;
+	    }	     
 	  
 	  if(k>burnin)
 	    {
@@ -8860,7 +8879,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    }
 		}
 	    }
-		
 	  for(i=0;i<rootsamples;i++)
 	    {
 	      tempvec3[i]=treeLikeli2(quickedges,root[1],quickclado,count,mutorder[i],clado,level,wwnew,datsiz,historyorder[i],countsnp);
@@ -8885,7 +8903,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    }
 		}
 	    }
-		
 	  for(i=0;i<rootsamples;i++)
 	    {
 	      tempvec1[i]=treeLikeli1(quickedges,root[0],quickclado,count,Mutorder[i],clado,level,ww,datsiz,Historyorder[i],countsnp);
@@ -8920,10 +8937,10 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	 
 	  accept=log(tempmat2[0][0]/tempmat1[0][0]);
 	  /*
-	  accept=0;
-	  for(i=0;i<rootsamples;i++)
+	    accept=0;
+	    for(i=0;i<rootsamples;i++)
 	    {
-	      accept=accept+exp(tempvec3[i]-tempvec1[i]);
+	    accept=accept+exp(tempvec3[i]-tempvec1[i]);
 	    }
 	  */
 	 
@@ -9021,20 +9038,20 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	  level[root[0]]=-1;
 	  levels(root[0]);
 	  /*
-	  if(k==10)
+	    if(k==10)
 	    {
-	      Rprintf("\n");
-	      for(i=0;i<locno;i++)
-		{
-		  Rprintf("%d(%d): ",i+1,(int)loc[i][0]);
-		  for(j=dim+1;j<(int)loc[i][0]+dim+1;j++)
-		    {
-		      Rprintf("%d ",(int)loc[i][j]);
-		    }
-		  Rprintf("\n");
-		}
-	      Rprintf("\n");
-	      }	
+	    Rprintf("\n");
+	    for(i=0;i<locNo;i++)
+	    {
+	    Rprintf("%d(%d): ",i+1,(int)loc[i][0]);
+	    for(j=dim+1;j<(int)loc[i][0]+dim+1;j++)
+	    {
+	    Rprintf("%d ",(int)loc[i][j]);
+	    }
+	    Rprintf("\n");
+	    }
+	    Rprintf("\n");
+	    }	
 	  */
 	  
 	  if(k>burnin)
@@ -9052,19 +9069,19 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		  temp_ancestral[i]=0;
 		}
 	      totalancestral[0] = 0;
-	      ancestralgroup_identi(totalancestral,root[0],root[0],0,Temp,quickclado,locno);
+	      ancestralgroup_identi(totalancestral,root[0],root[0],0,Temp,quickclado,locNo);
 	      //   Rprintf("total ancestral %lf\n",totalancestral[0]);
 	      /*
-	      tempvar=0;//here we normalise each haplotype by its frequency, so prevalent haplotypes are less informative than rare ones... 
-	      for(i=0;i<count;i++)
+		tempvar=0;//here we normalise each haplotype by its frequency, so prevalent haplotypes are less informative than rare ones... 
+		for(i=0;i<count;i++)
 		{
-		  if(identi[i]>0)
-		    {
-		      tempvar=tempvar+1;
-		    }
+		if(identi[i]>0)
+		{
+		tempvar=tempvar+1;
+		}
 		}
 	      */
-	      
+	    
 	      totalancestral[0] = 0;//here we normalise all haplotypes irrespective of frequency, so prevalent haplotypes would be equally informative as rare ones...
 	      //  Rprintf("\n");
 	      for(i=0;i<count;i++)
@@ -9080,14 +9097,14 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	      //	      totalancestral[0]=1;
 	      //  Rprintf("\n");
 	      //  tempvar=1;
-	      ancestralgroup_add(totalancestral,root[0],root[0],0,Temp,quickclado,locno);
+	      ancestralgroup_add(totalancestral,root[0],root[0],0,Temp,quickclado,locNo);
 	      /*
-	      for(i=0;i<count;i++)
+		for(i=0;i<count;i++)
 		{
-		  Rprintf("%d ",identi[i]);
-		  Rprintf("loc %d freq %lf\n",i+1,ancestrallocation[i]);
+		Rprintf("%d ",identi[i]);
+		Rprintf("loc %d freq %lf\n",i+1,ancestrallocation[i]);
 		}
-	      Rprintf("\n");
+		Rprintf("\n");
 	      */	   
 	      free(temp_ancestral);
 	      // Rprintf("\n");  
@@ -9109,15 +9126,15 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		  do{
 		    root[1]=root[0];
 		    /*
-		    do{
+		      do{
 		      flag=1;
 		      root[1]=(int)floor(guni()*count);
 		      root[1]=root[0];
 		      if(nodeorderquick(root[1],quickclado,clado,count)<=1&&datsiz[root[1]]==0)
-			{
-			  flag=0;
-			}
-		    }while(flag==0);
+		      {
+		      flag=0;
+		      }
+		      }while(flag==0);
 		    */
 		    tempvar=tempvar+1;
 		    if(tempvar>1000000)
@@ -9242,7 +9259,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    }
 		  tempvec1[0]=0;
 		  tempvec3[0]=0;
-		
 		  for(i=0;i<rootsamples;i++)
 		    {
 		      tempvec1[i]=treeLikeli1(quickedges,root[0],quickclado,count,Mutorder[i],clado,level,ww,datsiz,Historyorder[i],countsnp);
@@ -9281,7 +9297,6 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    }
 		  //		      tempvec1[0]=0;
 		  tempvec3[0]=0;
-			 
 		  for(i=0;i<rootsamples;i++)
 		    {
 		      tempvec3[i]=treeLikeli2(quickedges,root[1],quickclado,count,mutorder[i],clado,level,ww,datsiz,historyorder[i],countsnp);
@@ -9493,8 +9508,16 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	      other=(int *)calloc((maxmig[0]+1),sizeof(int));//the sizes
 	      various=(int *)calloc(count,sizeof(int));//substitute for don. 		
 	      sorted=(int *)calloc(count,sizeof(int));
-	      done=(int *)calloc(20*count,sizeof(int));
-	      don=(int *)calloc(20*count,sizeof(int));
+	      if(count>1)
+		{
+		  done=(int *)calloc(20*count,sizeof(int));
+		  don=(int *)calloc(20*count,sizeof(int));
+		}
+	      else
+		{
+		  done=(int *)calloc(20*datsiz[0],sizeof(int));
+		  don=(int *)calloc(20*datsiz[0],sizeof(int));
+		}
 	      ffnew=(int *)calloc((count),sizeof(int));//this will tell us if we're done this central yet. 
 	      fffnew=(int *)calloc((maxmig[0]+2),sizeof(int));//this will tell us if we're done this central yet. 
 	      for(j=0;j<maxmig[0]+1;j++)
@@ -9765,7 +9788,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		      tempindic[i][j]=indic[i][j];
 		      tempIndic[i][j]=Indic[i][j];
 		    }
-		  for(j=0;j<MaxMig+1;j++)
+		  for(j=0;j<maxMig+1;j++)
 		    {
 		      tempcentralls[i][j]=centrall[i][j];
 		      tempCentralls[i][j]=Centrall[i][j];
@@ -9944,7 +9967,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	    {
 	      //then the posterior for the cov matrix wil be invW(n+m,B) then calculate B-1 generate normals calculate their square sum things and we hav the wishart generated, invert and we're done. 
 	      /*********************STEP B1d: propose new mu and tau****************/
-	      for(l=0;l<MaxMig+1;l++)
+	      for(l=0;l<maxMig+1;l++)
 		{
 		  temp=sampleTau(dim,dimwish,l,data,datsiz,mean[l],group,indic,size[l],psimat,mpriori[1],tau[l],(int)1);
 		  temp=sampleMu(dim,size[l],mean[l],muprior,tau[l],mu[l],(int)1);
@@ -10251,7 +10274,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	      mpriori[0]=mpriori[1];
 	      proposalprobs[0][maxmig[0]]=proposalprobs[1][maxmig[0]];
 
-	      if(abs(MaxMig)>0.5)
+	      if(abs(maxMig)>0.5)
 		{
 		  //		      Rprintf("\n36602:\n");
 		  for(j=0;j<maxmig[0];j++)
@@ -10391,7 +10414,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		}
 	    }
 	    
-	  if(abs(MaxMig)>0.5)
+	  if(abs(maxMig)>0.5)
 	    {
 	      for(j=0;j<maxmig[0];j++)
 		{
@@ -10428,7 +10451,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		}
 	      size[i]=Size[i];
 	      //Rprintf("sizey %d \n",size[i]);	    
-	      //prod[MaxMig+1+i]=prod[i];
+	      //prod[maxMig+1+i]=prod[i];
 	    }	
 		    
 	  for(i=0;i<count;i++)
@@ -10439,7 +10462,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	
 	      
 	  /***************update Mu and Tau only***************/
-	  for(l=0;l<MaxMig+1;l++)
+	  for(l=0;l<maxMig+1;l++)
 	    {
 	      temp=sampleTau(dim,dimwish,l,data,datsiz,Mean[l],Group,Indic,Size[l],psimat,mpriori[0],Tau[l],(int)1);
 	      temp=sampleMu(dim,Size[l],Mean[l],muprior,Tau[l],Mu[l],(int)1);	     
@@ -10459,13 +10482,16 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		{
 		  for(j=0;j<count;j++)
 		    {
-		      EdgeTotalProb[i*count+j]=EdgeTotalProb[i*count+j]+1;
+		      if(clado[i*count+j]==1)
+			{
+			  edgeTotalProb[i*count+j]=edgeTotalProb[i*count+j]+1;
+			}
 		    }
 		}
 	      for(j=0;j<loopno;j++)
 		{
-		  EdgeTotalProb[Deletedge[2*j]*count+Deletedge[2*j+1]]= EdgeTotalProb[Deletedge[2*j]*count+Deletedge[2*j+1]]-1;
-		  EdgeTotalProb[Deletedge[2*j+1]*count+Deletedge[2*j]]= EdgeTotalProb[Deletedge[2*j+1]*count+Deletedge[2*j]]-1;
+		  //	  edgeTotalProb[Deletedge[2*j]*count+Deletedge[2*j+1]]= edgeTotalProb[Deletedge[2*j]*count+Deletedge[2*j+1]]-1;
+		  // edgeTotalProb[Deletedge[2*j+1]*count+Deletedge[2*j]]= edgeTotalProb[Deletedge[2*j+1]*count+Deletedge[2*j]]-1;
 		}
 	  
 	      mprioritot=mprioritot+mpriori[0];
@@ -10515,17 +10541,17 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	      //now here we want to order according to the angle theta which here is represented by tmepvec 1!!!!
 	      //		  
 	      temp=-10E20;
-	      identi=(int *)calloc((MaxMig+1),sizeof(double));
+	      identi=(int *)calloc((maxMig+1),sizeof(int));
 	      tempvec2=(double *)calloc(1,sizeof(double));
 	      //  Rprintf("factorial 4 is %d\n",factorial(4));
 	  
 	      // Rprintf("\nSizes: ");
-	      for(i=0;i<MaxMig+1;i++)
+	      for(i=0;i<maxMig+1;i++)
 		{
 		  //	  Rprintf("%d ",Size[i]);
 		  Rank[i]=i;
 		  identi[i]=i;
-		  for(j=0;j<MaxMig+1;j++)
+		  for(j=0;j<maxMig+1;j++)
 		    {		      
 		      referenceclusterlikeli[i][j]=0;
 		      for(w=0;w<count;w++)
@@ -10549,12 +10575,12 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    }
 		}
 	      
-	      for(i=0;i<factorial(MaxMig+1);i++)
+	      for(i=0;i<factorial(maxMig+1);i++)
 		{
-		  permuted(i,MaxMig+1,identi);
+		  permuted(i,maxMig+1,identi);
 		  tremp=0;
 
-		  for(j=0;j<MaxMig+1;j++)
+		  for(j=0;j<maxMig+1;j++)
 		    {
 		      tremp=tremp+referenceclusterlikeli[j][identi[j]];
 		    }
@@ -10562,9 +10588,9 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    {
 		      Temp=i;
 		      temp=tremp;
-		      for(j=0;j<MaxMig+1;j++)
+		      for(j=0;j<maxMig+1;j++)
 			{
-			  for(w=0;w<MaxMig+1;w++)
+			  for(w=0;w<maxMig+1;w++)
 			    {
 			      if(identi[w]==j)
 				{
@@ -10575,7 +10601,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    }
 		}
 		
-	      for(w=0;w<MaxMig+1;w++)
+	      for(w=0;w<maxMig+1;w++)
 		{
 		  //Rprintf("Rank[%d]=%d\n",w,Rank[w]);
 		}
@@ -10609,7 +10635,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    {
 		      if(datsiz[i]>0)
 			{
-			  clusterprobs[i*(MaxMig+1)+(int)Rank[Group[i]]]= clusterprobs[i*(MaxMig+1)+(int)Rank[Group[i]]]+1;
+			  clusterprobs[i*(maxMig+1)+(int)Rank[Group[i]]]= clusterprobs[i*(maxMig+1)+(int)Rank[Group[i]]]+1;
 			}
 		      for(j=0;j<datsiz[i];j++)
 			{
@@ -10620,14 +10646,14 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    {
 		      for(j=0;j<datsiz[i];j++)
 			{
-			  clusterprobs[i*(MaxMig+1)+(int)Rank[Indic[i][j]]]= clusterprobs[i*(MaxMig+1)+(int)Rank[Indic[i][j]]]+(double)1/datsiz[i];
+			  clusterprobs[i*(maxMig+1)+(int)Rank[Indic[i][j]]]= clusterprobs[i*(maxMig+1)+(int)Rank[Indic[i][j]]]+(double)1/datsiz[i];
 			  indicprobs[i][j][(int)Rank[Indic[i][j]]]=indicprobs[i][j][(int)Rank[Indic[i][j]]]+1;
 			}
 		    }		       			 
 		}
 	     
 	      
-	      if(k>burnin&&abs(MaxMig)>0.5)
+	      if(k>burnin&&abs(maxMig)>0.5)
 		{    
 		  for(j=0;j<maxmig[0];j++)
 		    {
@@ -10648,7 +10674,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		}	
 	
 		
-	      for(i=0;i<MaxMig+1;i++)
+	      for(i=0;i<maxMig+1;i++)
 		{
 		  if(Size[i]>0)
 		    {
@@ -10656,13 +10682,13 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    }
 		}
 		
-	      for(l=0;l<MaxMig+1;l++)
+	      for(l=0;l<maxMig+1;l++)
 		{	      
 		  if(Size[l]==0)
 		    {
 		      //		      continue;
 		    }
-		  for(w=0;w<MaxMig+1;w++)
+		  for(w=0;w<maxMig+1;w++)
 		    {				 
 		      if((int)Rank[w]==l)
 			{
@@ -10682,7 +10708,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		}
 	    
 	    
-	      if(PostSamples>0&&k%PostSieve==0)
+	      if(postSamples>0&&k%PostSieve==0)
 		{
 		  //		  Rprintf("k%d (PostSieve %d\n)\n ",k,PostSieve);
 		  for(i=0;i<count;i++)
@@ -10691,7 +10717,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 			{
 			  for(j=0;j<datsiz[i];j++)
 			    {
-			      SampleIndicesR[PostCounterIndex]=(double)Rank[Group[i]]+1;
+			      sampleIndicesR[PostCounterIndex]=(double)Rank[Group[i]]+1;
 			      PostCounterIndex=PostCounterIndex+1;
 			    }
 			}
@@ -10699,27 +10725,27 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 			{
 			  for(j=0;j<datsiz[i];j++)
 			    {
-			      SampleIndicesR[PostCounterIndex]=(double)Rank[Indic[i][j]]+1;
+			      sampleIndicesR[PostCounterIndex]=(double)Rank[Indic[i][j]]+1;
 			      PostCounterIndex=PostCounterIndex+1;
 			    }
 			}
 		    }
 
-		  SampleRootCodaR[PostCounterRootCoda] = root[0];
+		  sampleRootCodaR[PostCounterRootCoda] = root[0];
 		  PostCounterRootCoda = PostCounterRootCoda + 1;
 
 		  //		  Rprintf(" sizes %d %d %d %d %d \n",Size[0],Size[1],Size[2],Size[3],Size[4]);
-		  for(i=0;i<MaxMig+1;i++)
+		  for(i=0;i<maxMig+1;i++)
 		    {
 		      //  Rprintf("%d ",Size[i]);
   
-		      for(j=0;j<MaxMig+1;j++)
+		      for(j=0;j<maxMig+1;j++)
 			{
 			  if((int)Rank[j]==i)
 			    {	
 			      for(w=0;w<dim;w++)
 				{
-				  SampleClusterCodaR[PostCounterClusterCoda]=normalization[w][0]+normalization[w][1]*Mu[j][w];
+				  sampleClusterCodaR[PostCounterClusterCoda]=normalization[w][0]+normalization[w][1]*Mu[j][w];
 				  PostCounterClusterCoda=PostCounterClusterCoda+1;
 				  //	  Rprintf("%d ",PostCounterMean);
 				}
@@ -10727,13 +10753,13 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 				{
 				  for(l=0;l<2;l++)
 				    {
-				      SampleClusterCodaR[PostCounterClusterCoda]=normalization[w][1]*normalization[l][1]*Tau[j][w][l];
+				      sampleClusterCodaR[PostCounterClusterCoda]=normalization[w][1]*normalization[l][1]*Tau[j][w][l];
 				      PostCounterClusterCoda=PostCounterClusterCoda+1;				 
 				    }
 				}	
 			      for(w=2;w<dim;w++)
 				{
-				  SampleClusterCodaR[PostCounterClusterCoda]=normalization[w][1]*normalization[w][1]*Tau[j][w][w];
+				  sampleClusterCodaR[PostCounterClusterCoda]=normalization[w][1]*normalization[w][1]*Tau[j][w][w];
 				  PostCounterClusterCoda=PostCounterClusterCoda+1;				 
 				    
 				}		      
@@ -10741,14 +10767,14 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 				{
 				  for(w=0;w<dim;w++)
 				    {
-				      SampleMeansR[PostCounterMean]=1.0/0.0;
+				      sampleMeansR[PostCounterMean]=1.0/0.0;
 				      PostCounterMean=PostCounterMean+1;
 				    }
 				  continue;
 				}
 			      for(w=0;w<dim;w++)
 				{
-				  SampleMeansR[PostCounterMean]=normalization[w][0]+normalization[w][1]*Mu[j][w];
+				  sampleMeansR[PostCounterMean]=normalization[w][0]+normalization[w][1]*Mu[j][w];
 				  PostCounterMean=PostCounterMean+1;
 				  //	  Rprintf("%d ",PostCounterMean);
 				}
@@ -10756,10 +10782,10 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 			}
 		    }
 
-		  for(i=0;i<MaxMig+1;i++)
+		  for(i=0;i<maxMig+1;i++)
 		    {
 		     
-		      for(j=0;j<MaxMig+1;j++)
+		      for(j=0;j<maxMig+1;j++)
 			{
 			  if((int)Rank[j]==i)					
 			    {
@@ -10769,7 +10795,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 				    {
 				      for(l=0;l<dim;l++)
 					{
-					  SampleCovsR[PostCounterCov]=1.0/0.0;
+					  sampleCovsR[PostCounterCov]=1.0/0.0;
 					  PostCounterCov=PostCounterCov+1;	
 					}
 				    }
@@ -10779,7 +10805,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 				{
 				  for(l=0;l<dim;l++)
 				    {
-				      SampleCovsR[PostCounterCov]=normalization[w][1]*normalization[l][1]*Tau[j][w][l];
+				      sampleCovsR[PostCounterCov]=normalization[w][1]*normalization[l][1]*Tau[j][w][l];
 				      PostCounterCov=PostCounterCov+1;				 
 				    }
 				}
@@ -10854,7 +10880,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	      clado[Deletedge[2*w+1]*count+Deletedge[2*w]]=0;
 	      clado[Deletedge[2*w]*count+Deletedge[2*w+1]]=0;
 	    }
-	  for(i=0;i<MaxMig;i++)
+	  for(i=0;i<maxMig;i++)
 	    {
 	      ce[i]=-1;
 	    }
@@ -10873,7 +10899,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		}
 	      else
 		{
-		  if(u>combprop&&abs(maxmig[0]-MaxMig)>0.5)
+		  if(u>combprop&&abs(maxmig[0]-maxMig)>0.5)
 		    {
 		      maxmig[1]=maxmig[0]+1;
 		    }
@@ -10892,7 +10918,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		  flag=1;
 		  maxmig[1]=maxmig[0];
 		}
-	      if(u>combprop&&abs(maxmig[0]-MaxMig)<0.5)
+	      if(u>combprop&&abs(maxmig[0]-maxMig)<0.5)
 		{
 		  reject0=1;
 		  flag=1;
@@ -10927,7 +10953,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		    flag1=(int)floor(u*(maxmig[0]));
 		    //so upd[0] ijnitially is just the edge we're going to add back in,then it becomes one of the two groups
 		
-		    if(abs(MaxMig)>0.5)
+		    if(abs(maxMig)>0.5)
 		      {
 			u=guni();
 			/*switch one central to the end*/
@@ -11126,7 +11152,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 			}
 		    }
 		     
-		  if(abs(MaxMig)>0.5)
+		  if(abs(maxMig)>0.5)
 		    {
 		      if(Group[Ce[flag1]]<-2)
 			{
@@ -11148,7 +11174,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 			  group[i]=0;
 			}
 		    }		     
-		  for(w=0;w<MaxMig;w++)
+		  for(w=0;w<maxMig;w++)
 		    {
 		      tempce[w]=ce[w];
 		      tempCe[w]=Ce[w];
@@ -11163,13 +11189,13 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 			  tempindic[i][j]=indic[i][j];
 			  tempIndic[i][j]=Indic[i][j];
 			}
-		      for(j=0;j<MaxMig+1;j++)
+		      for(j=0;j<maxMig+1;j++)
 			{
 			  tempcentralls[i][j]=centrall[i][j];
 			  tempCentralls[i][j]=Centrall[i][j];
 			}
 		    }
-		  for(w=0;w<MaxMig+1;w++)
+		  for(w=0;w<maxMig+1;w++)
 		    {
 		      tempsize[w]=size[w];
 		      tempSize[w]=Size[w];
@@ -11184,7 +11210,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 			      temptau[w][i][j]=tau[w][i][j];
 			      tempTau[w][i][j]=Tau[w][i][j];
 			    }
-			  for(j=0;j<MaxMig+1;j++)
+			  for(j=0;j<maxMig+1;j++)
 			    {
 			      tempmixes[w][j]=mixx[w][j];
 			      tempMixes[w][j]=Mixx[w][j];
@@ -11375,17 +11401,17 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 			    }
 			}
 		
-		      for(i=0;i<MaxMig+1;i++)
+		      for(i=0;i<maxMig+1;i++)
 			{
 			  // Size[i]=size[i];
-			  for(j=0;j<MaxMig+1;j++)
+			  for(j=0;j<maxMig+1;j++)
 			    {
 			      //Mixx[i][j]=(double)1/(maxmig[1]+1);
 			      //ixx[i][j]=Mixx[i][j];
 			      Mixx[i][j]=mixx[i][j];
 			    }
 			}
-		      if(abs(MaxMig)>0.5)
+		      if(abs(maxMig)>0.5)
 			{
 			  for(i=0;i<count;i++)
 			    {
@@ -11507,7 +11533,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 					    
 		      maxmig[1]=maxmig[0];
 
-		      if(abs(MaxMig)>0.5)
+		      if(abs(maxMig)>0.5)
 			{
 			  for(i=0;i<count;i++)
 			    {
@@ -11528,7 +11554,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		  for(l=0;l<maxmig[1]+1;l++)
 		    {
 		      temp=0;
-		      //	  maxmig[0]=MaxMig;
+		      //	  maxmig[0]=maxMig;
 		      for(i=0;i<maxmig[1]+1;i++)
 			{
 			  //	  mixx[l][i]=guni();
@@ -11560,7 +11586,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		      clado[Deletedge[2*j+1]*count+Deletedge[2*j]]=0;
 		    }
 		  
-		  for(i=0;i<MaxMig;i++)
+		  for(i=0;i<maxMig;i++)
 		    {
 		      ce[i]=-1;
 		    }
@@ -11601,7 +11627,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 			{
 			  identi[i]=0;
 			}
-		      for(i=0;i<MaxMig;i++)
+		      for(i=0;i<maxMig;i++)
 			{
 			  ce[i]=-1;
 			}
@@ -11688,8 +11714,16 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 		      other=(int *)calloc((maxmig[1]+1),sizeof(int));//the sizes
 		      various=(int *)calloc(count,sizeof(int));//substitute for don. 		
 		      sorted=(int *)calloc(count,sizeof(int));
-		      done=(int *)calloc(20*count,sizeof(int));
-		      don=(int *)calloc(20*count,sizeof(int));
+		      if(count>1)
+			{
+			  done=(int *)calloc(20*count,sizeof(int));
+			  don=(int *)calloc(20*count,sizeof(int));
+			}
+		      else
+			{
+			  done=(int *)calloc(20*datsiz[0],sizeof(int));
+			  don=(int *)calloc(20*datsiz[0],sizeof(int));
+			}
 		      ffnew=(int *)calloc((count),sizeof(int));//this will tell us if we're done this central yet. 
 		      fffnew=(int *)calloc((maxmig[1]+2),sizeof(int));//this will tell us if we're done this central yet. 
 		      for(j=0;j<maxmig[1]+1;j++)
@@ -12345,7 +12379,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     
       for(i=0;i<dim;i++)
 	{
-	  for(j=0;j<MaxMig+1;j++)
+	  for(j=0;j<maxMig+1;j++)
 	    {
 	      mutot[j][i][K]=mutotal[j][i];
 	    }
@@ -12353,7 +12387,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 
       for(i=0;i<dim;i++)
 	{
-	  for(j=0;j<MaxMig+1;j++)
+	  for(j=0;j<maxMig+1;j++)
 	    {
 	      for(l=0;l<K;l++)
 		{
@@ -12367,7 +12401,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	{
 	  for(w=0;w<dim;w++)
 	    {
-	      for(j=0;j<MaxMig+1;j++)
+	      for(j=0;j<maxMig+1;j++)
 		{
 		  tautot[w][i][j][K]=tautotal[w][i][j];
 		}
@@ -12378,7 +12412,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 	{
 	  for(i=0;i<dim;i++)
 	    {
-	      for(j=0;j<MaxMig+1;j++)
+	      for(j=0;j<maxMig+1;j++)
 		{
 		  for(l=0;l<K;l++)
 		    {
@@ -12396,34 +12430,34 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     {
       for(j=0;j<count;j++)
 	{
-	  EdgeTotalProb[i*count+j]=EdgeTotalProb[i*count+j]/((iter-burnin)*seeds);
-	  EdgeTotalProbR[i*count+j]=EdgeTotalProb[i*count+j];
-	  //	  Rprintf("%d ",EdgeTotalProb[i*count+j]);
+	  edgeTotalProb[i*count+j]=edgeTotalProb[i*count+j]/((iter-burnin)*seeds);
+	  edgeTotalProbR[i*count+j]=edgeTotalProb[i*count+j];
+	  //	  Rprintf("%d ",edgeTotalProb[i*count+j]);
 	}
     }
  
   for(l=0;l<count;l++)
     {
       temp=0;
-      for(j=0;j<MaxMig+1;j++)
+      for(j=0;j<maxMig+1;j++)
 	{
-	  ClusterProbsR[l*(MaxMig+1)+j]=clusterprobs[l*(MaxMig+1)+j];
-	  temp=temp+clusterprobs[l*(MaxMig+1)+j];
+	  clusterProbsR[l*(maxMig+1)+j]=clusterprobs[l*(maxMig+1)+j];
+	  temp=temp+clusterprobs[l*(maxMig+1)+j];
 	}
-      for(j=0;j<MaxMig+1;j++)
+      for(j=0;j<maxMig+1;j++)
 	{
-	  ClusterProbsR[l*(MaxMig+1)+j]=ClusterProbsR[l*(MaxMig+1)+j]/temp;
+	  clusterProbsR[l*(maxMig+1)+j]=clusterProbsR[l*(maxMig+1)+j]/temp;
 	}
     }
  
   temp=0;
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
       temp=temp+ancestrallocation[i];
     }
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
-      RootLocProbsR[i]=ancestrallocation[i]/temp;
+      rootLocProbsR[i]=ancestrallocation[i]/temp;
     }
 
   MCMCparamsR[3]=(double)clusterweighttot/seeds/(iter-burnin);     
@@ -12442,14 +12476,14 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     }	  
 
   temp=0;
-  for(i=0;i<MaxMig-Minmut+1;i++)
+  for(i=0;i<maxMig-Minmut+1;i++)
     {
       temp=temp+(double)howmany[i];
     }
 
-  for(i=0;i<MaxMig-Minmut+1;i++)
+  for(i=0;i<maxMig-Minmut+1;i++)
     {
-      MigProbsR[i]=(double)howmany[i]/temp;
+      migProbsR[i]=(double)howmany[i]/temp;
     }
 
   if(loopno>0)
@@ -12631,7 +12665,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     {
       for(j=0;j<count;j++)
 	{
-	  RootProbsR[Temp]=(double)rootfreq[i][j];
+	  rootProbsR[Temp]=(double)rootfreq[i][j];
 	  Temp=Temp+1;
 	}
     }
@@ -12647,7 +12681,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       free(indicprobs[i]);
     }
   free(indicprobs);
-  for(i=0;i<nseq;i++)
+  for(i=0;i<nseq+10;i++)
     {
       free(TT[i]);
       free(t[i]);
@@ -12657,10 +12691,10 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   free(t);
   free(T);  
 
-  free(SeqLabels);
+  free(seqLabels);
 
-  free(S);
-  free(included);
+  //  free(S);
+
   free(size);
   free(siztotal);
 
@@ -12697,7 +12731,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   free(quickedges);
   free(haploc);
   free(observed);
-  free(seqsfile);
+  free(seqsFile);
   free(p);
   free(pprop);
 
@@ -12706,7 +12740,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       free(centrall[i]);
       free(Centrall[i]);
     }
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       //	  free(centrall[i]);
       //  free(Centrall[i]);
@@ -12735,13 +12769,13 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 
   free(whichnull);
   free(groupnodefull);
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       free(referenceclusterlikeli[i]);
     }
   free(referenceclusterlikeli);
 
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       free(mean[i]);
       free(Mean[i]);
@@ -12758,7 +12792,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   free(TempMu);
   free(mutotal);
 
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       for(j=0;j<dim;j++)
 	{
@@ -12768,13 +12802,13 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     }
   free(mutot);
  
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
       free(groupfreq[i]);
     }
 
   free(groupfreq);
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       for(j=0;j<dim;j++)
 	{
@@ -12803,7 +12837,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
     {
       for(j=0;j<dim;j++)
 	{
-	  for(l=0;l<MaxMig+1;l++)
+	  for(l=0;l<maxMig+1;l++)
 	    {
 	      free(tautot[i][j][l]);
 	    }
@@ -12829,7 +12863,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       free(tempmat2[i]);
       free(tempmat3[i]);
   
-       free(psimat[i]);
+      free(psimat[i]);
       free(vecvecdata[i]);
       free(muprior[i]);
     }
@@ -12837,10 +12871,10 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   free(tempmat2);
   free(tempmat3);
 
-   free(psimat);
+  free(psimat);
   free(vecvecdata);
   free(muprior);
-  for(i=0;i<locno;i++)
+  for(i=0;i<locNo;i++)
     {
       free(loc[i]);
     }
@@ -12916,7 +12950,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   free(tempce);
   free(tempCe);
     
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       free(tempmean[i]);
       free(tempMean[i]);
@@ -12943,7 +12977,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   free(tempindic);
   free(tempIndic);
   
-  for(i=0;i<MaxMig+1;i++)
+  for(i=0;i<maxMig+1;i++)
     {
       for(j=0;j<dim;j++)
 	{
@@ -12994,7 +13028,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
       free(fullclust[i]);
     }
   free(fullclust);
-  free(totfullclust);
+
   for(i=0;i<loopno+1;i++)
     {
       free(path[i]);
@@ -13003,7 +13037,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
   free(nullloop);
 
   free(datsiz);
-  free(EdgeTotalProb);
+  free(edgeTotalProb);
  
   for(i=0;i<DimDim+1;i++)
     {
@@ -13018,7 +13052,7 @@ void BPEC(double *ModeInitial,char **SeqR,double *CoordsLocsR,double *CoordsDims
 
   temp=0;
   PutRNGstate();
-  if(ModeInitial[0]<0.5)
+  if(modeInitial[0]<0.5)
     {
       Rprintf("\n\n");
     }

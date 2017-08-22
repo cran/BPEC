@@ -1,22 +1,22 @@
-\name{BPEC.GeoTree}
+\name{bpec.geoTree}
 \encoding{ISO-8859-1}
 \Rdversion{1.1}
-\alias{BPEC.GeoTree}
+\alias{bpec.geoTree}
 \title{Phylogeographic GoogleEarth plot}
 \description{Given the output of an MCMC run, outputs phylogeographic code to show migration on a map through GoogleEarth.  }
-\usage{BPEC.GeoTree(MCMCout,CoordsLocs,file="GoogleEarthTree.kml")}
+\usage{bpec.geoTree(bpecout,file="GoogleEarthTree.kml")}
 
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{MCMCout}{\R object from \code{BPEC.MCMC} run }
-   \item{CoordsLocs}{A matrix where each row shows latitude, longitude (plus any additional covariates), plus all the haplotype numbers found at each location.  }
+  \item{bpecout}{\R object from \code{bpec.mcmc} run }
+ 
     \item{file}{Filename for the .kml file to be created }
 }
 \details{ Additionally to the output variables, a .kml file is created which can be loaded into GoogleEarth.  }
 
 \value{
-\item{Phy}{Set of nodes and branches that can be loaded into \code{Phylo2GE()}}
-\item{Geo}{Set of haplotypes and locations that can be loaded into \code{Phylo2GE()}}
+\item{phy}{Set of nodes and branches that can be loaded into \code{Phylo2GE()}}
+\item{geo}{Set of haplotypes and locations that can be loaded into \code{Phylo2GE()}}
 }
 
 \references{
@@ -33,22 +33,21 @@ N. Arrigo, L.P. Albert, P.G. Mickelson and M.S. Barker (2012). Quantitative visu
 #to use example dataset:
 data(MacrocnemisRawSeqs)
 data(MacrocnemisCoordsLocs)
-CoordsLocs = MacrocnemisCoordsLocs
-RawSeqs = MacrocnemisRawSeqs
+coordsLocs = MacrocnemisCoordsLocs
+rawSeqs = MacrocnemisRawSeqs
 
-##to use your own dataset
-#RawSeqs = read.nexus.data('Haplotypes.nex')
-#CoordsLocs = read.table(
-# 'CoordsLocsFile.txt',header=FALSE,fill=TRUE,col.names=1:max(count.fields('CoordsLocsFile.txt'))
-#  )
+## to use your own dataset
+# rawSeqs = bpec.loadSeq('Haplotypes.nex')
+# coordsLocs = bpec.loadCoords("coordsLocsFile.txt")
+
 ## to set phenotypic/environmental covariate names, use (as appropriate)
-# colnames(CoordsLocs)[1:dims] = c('lat','long','cov1','cov2','cov3')   
+# colnames(coordsLocs)[1:dims] = c('lat','long','cov1','cov2','cov3')   
 ## where dims is the corresponding number of measurements available 
 ## (2 for latitude and longitude only, add one for each additional available measurement) 
 
 #to run the MCMC sampler: 
-MCMCout = BPEC.MCMC(RawSeqs,CoordsLocs,MaxMig=2,iter=50,ds=0,PostSamples=5,dims=8)
-BPEC.Geo = BPEC.GeoTree(MCMCout,CoordsLocs,file="GoogleEarthTree.kml")
+bpecout = bpec.mcmc(rawSeqs,coordsLocs,maxMig=2,iter=50,ds=0,postSamples=5,dims=8)
+bpec.Geo = bpec.geoTree(bpecout,file="GoogleEarthTree.kml")
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

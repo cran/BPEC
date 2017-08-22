@@ -10,9 +10,8 @@
 
 #include <R.h>
 #include <Rmath.h>
-#include <Rinternals.h> 
-#include "Rinterface.h"
-#include <R_ext/Utils.h>  
+//#include <Rinternals.h> 
+//#include <R_ext/Utils.h>  
 
 double treeLikeli1(int **quickedges,int rrroot,int **quickclado,int count,int *mutorder,int *clado,int *level,double ww,int *datsiz,int *Historyorder,int length)//previous
 {

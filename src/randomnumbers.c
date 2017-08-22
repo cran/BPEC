@@ -8,12 +8,6 @@
 #include "randomnumbers.h"
 #include "matrices.h"
 
-#include <R.h>
-#include <Rmath.h>
-#include <Rinternals.h> 
-#include "Rinterface.h"
-#include <R_ext/Utils.h>  
-
 #define Pi 3.14159265358979323846
 
 double guni()/*generates a uniform in (0,1)*/

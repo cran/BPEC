@@ -13,9 +13,9 @@
 #Molecular Ecology Resources (2012) doi: 10.1111/1755-0998.12012
 
 
-# Usage: Using the TreeEdges, creating a haplotype network in Newick format,
+# Usage: Using the treeEdges, creating a haplotype network in Newick format,
 # converting the haplotype network to input file "phy" and re-arranging the
-# CoordsLocsFile to input "geo" for final use in the package "R2G2";
+# coordsLocsFile to input "geo" for final use in the package "R2G2";
 # KML produced using the Phylo2GE function.
 
 mynei <- function(net,v,mode){
@@ -99,11 +99,12 @@ explode <- function (net) {
 }
 
 
-BPEC.Phylo2GE <-
+bpec.phylo2GE <-
 function (geo, phy, resol = 0.05, minAlt = 1000, maxAlt = 2.5e+05, 
     goo = "GoogleEarthTree.kml") 
-{
+{    
     geo = geo[match(phy$tip.label, geo[, 1]), ]
+ 
     Ntaxa = length(phy$tip.label)
     Ntot = Ntaxa + phy$Nnode
     geo.childs = data.frame(node = 1:nrow(geo), geo[, 2:3])
@@ -144,7 +145,7 @@ function (geo, phy, resol = 0.05, minAlt = 1000, maxAlt = 2.5e+05,
     meta$age = minAlt + meta$age * maxAlt
     cat("<?xml version=\"1.0\"?>\n<kml xmlns=\"http://earth.google.com/kml/2.0\">\n<Document>", 
         file = goo, append = FALSE)
-    cat("<description>Produced using BPEC and Phylo2GE</description>\n<name>R2G2 - Phylo2GE</name>\n<open>0</open>", 
+    cat("<description>Produced using bpec and Phylo2GE</description>\n<name>R2G2 - Phylo2GE</name>\n<open>0</open>", 
         file = goo, append = TRUE)
     for (i in 1:Ntaxa) {
         xyz = as.numeric(meta[i, 2:4])
@@ -185,36 +186,36 @@ function (geo, phy, resol = 0.05, minAlt = 1000, maxAlt = 2.5e+05,
     cat("</Folder></Document>\n</kml>", file = goo, append = TRUE)
 }
 
-BPEC.GeoTree <- function(MCMCout,CoordsLocs,file="GoogleEarthTree.kml")
-{
-    Output=list()
+bpec.geoTree <- function(bpecout, file="GoogleEarthTree.kml") {
+    Output = list()
     writeLines("Creating GoogleEarth Tree plot...")
-    TreeEdges = MCMCout$TreeEdges
-    clustprob = MCMCout$ClusterProbsR
-    count = MCMCout$countR
-  dims = dim(MCMCout$SampleMeansR)[1]
+    treeEdges = bpecout$tree$treeEdges
+    clustprob = bpecout$clust$clusterProbsR
+    count = bpecout$data$countR
+    coordsLocs = bpecout$input$coordsLocsR
+    dims = dim(bpecout$clust$sampleMeansR)[1]
 ####################################################################
                                         # required libraries igraph, R2G2, ape
 ####################################################################
                                         # include network.to.newick.r - function
 ####################################################################
                                         #source("network.to.newick.mod.r")
-                                        #source("~/Desktop/BPEC-Rsources/network.to.newick_igraph.r")
+                                        #source("~/Desktop/bpec-Rsources/network.to.newick_igraph.r")
 ####################################################################
                                         # load needed library "igraph"
                                         # library("igraph")
                                         # make graph from edgelist
-                                        #TreeEdgesOut = data.matrix(TreeEdges[,1:2])
-    TreeEdgesOut = data.matrix(MCMCout$TreeEdges[,1:2])
+                                        #treeEdgesOut = data.matrix(treeEdges[,1:2])
+    treeEdgesOut = data.matrix(bpecout$tree$treeEdges[,1:2])
     
-    dimnames(TreeEdgesOut) = NULL
-    GraphEdges = graph.edgelist(TreeEdgesOut, directed=TRUE)
+    dimnames(treeEdgesOut) = NULL
+    graphEdges = graph.edgelist(treeEdgesOut, directed=TRUE)
                                         # name vertex sequence
-                                        #V(GraphEdges)$name  = paste("h", sep="", V(GraphEdges))
-    V(GraphEdges)$name  = paste(V(GraphEdges))
+                                        #V(graphEdges)$name  = paste("h", sep="", V(graphEdges))
+    V(graphEdges)$name  = paste(V(graphEdges))
                                         # remove un-connected vertices
-    GraphEdgesSub = subgraph.edges(graph=GraphEdges, eids=1:length(E(GraphEdges)), delete.vertices = TRUE)
-                                        #GraphEdgesSub
+    graphEdgesSub = subgraph.edges(graph=graphEdges, eids=1:length(E(graphEdges)), delete.vertices = TRUE)
+                                        #graphEdgesSub
     
                                         # preparation for haplotype-graph plotting
     clustprob[clustprob %in% NaN] = NA
@@ -226,61 +227,61 @@ BPEC.GeoTree <- function(MCMCout,CoordsLocs,file="GoogleEarthTree.kml")
     attributes(rowMat) = NULL
     
                                         # create newick string without lengths
-                                        #GraphEdges.nwk = network.to.newick(GraphEdgesSub)
+                                        #graphEdges.nwk = network.to.newick(graphEdgesSub)
                                         # or
-    GraphEdges.nwk = explode(GraphEdgesSub)
+    graphEdges.nwk = explode(graphEdgesSub)
                                         # string manipulation
-    GraphEdges.nwk = paste("(",strsplit(GraphEdges.nwk,"\\;"),");", sep="")
+    graphEdges.nwk = paste("(",strsplit(graphEdges.nwk,"\\;"),");", sep="")
     
     ## input newick string to create a tree
     
-    GraphEdgesTree = read.newick(text=GraphEdges.nwk)
+    graphEdgesTree = read.newick(text=graphEdges.nwk)
                                         # remove singletons
-    GraphEdgesTree = collapse.singles(GraphEdgesTree)
+    graphEdgesTree = collapse.singles(graphEdgesTree)
     
                                         # add branch length of 1, as R2G2 needs branch lengths
-                                        # Note: BPEC model does not make inferences about divergence times!
-    phy = compute.brlen(GraphEdgesTree, 1)
+                                        # Note: bpec model does not make inferences about divergence times!
+    phy = compute.brlen(graphEdgesTree, 1)
                                         # with the Newick string stored in a file,
     
                                         # load needed package R2G2
                                         #library(R2G2)
                                         # note: the order of lon and lat must be reversed!
-  #  print(CoordsLocs)
+  #  print(coordsLocs)
   #  print(dims)
-  #  print(ncol(CoordsLocs))
-    if(ncol(CoordsLocs)==dims)
+  #  print(ncol(coordsLocs))
+    if(ncol(coordsLocs) == dims)
         {
-            CoordsLocs=cbind(CoordsLocs,seq(1,nrow(CoordsLocs)))
+            coordsLocs = cbind(coordsLocs, seq(1, nrow(coordsLocs)))
         }
-    CoordsLocsSingle = array(0,dim=c(sum(MCMCout$NoSamplesR),3))
+    coordsLocsSingle = array(0,dim = c(sum(bpecout$data$noSamplesR), 3))
     counter = 1
-    for(i in 1:nrow(CoordsLocs))
+    for(i in 1:nrow(coordsLocs))
         {
-            for(j in (dims+1):ncol(CoordsLocs))
+            for(j in (dims+1):ncol(coordsLocs))
                 {
-                    if(is.na(CoordsLocs[i,j])==FALSE)
+                    if(is.na(coordsLocs[i, j]) == FALSE & coordsLocs[i, j] >= 0)
                         {
-                            CoordsLocsSingle[counter,1] = CoordsLocs[i,1]
-                            CoordsLocsSingle[counter,2] = CoordsLocs[i,2]
-                            CoordsLocsSingle[counter,3] = CoordsLocs[i,j]
-                            counter=counter+1
+                            coordsLocsSingle[counter, 1] = coordsLocs[i, 1]
+                            coordsLocsSingle[counter, 2] = coordsLocs[i, 2]
+                            coordsLocsSingle[counter, 3] = coordsLocs[i, j]
+                            counter = counter+1
                         }      
                 }
         }
    
-    geo.0 =  CoordsLocsSingle[,c(1:2,dim(CoordsLocsSingle)[2])]
+    geo.0 =  coordsLocsSingle[, c(1:2, dim(coordsLocsSingle)[2])]
     
     colnames(geo.0) = c("lat", "lon", "taxa")
-    taxa=data.frame(taxa= as.numeric(GraphEdgesTree[["tip.label"]])); taxa
+    taxa=data.frame(taxa= as.numeric(graphEdgesTree[["tip.label"]])); taxa
 
                                        # merge final dataframe
-    CoordsLocsSub = merge(taxa, geo.0, by="taxa",all.x = T)
-    geo = CoordsLocsSub[, c("taxa","lon","lat")]
+    coordsLocsSub = merge(taxa, geo.0, by="taxa",all.x = T)
+    geo = coordsLocsSub[, c("taxa","lon","lat")]
                                        # converting the tip taxa of the haplotype tree and their corresponding
                                         # geographical coordinates into a KML file to be displayed into Google Earth
                                         #Phylo2GE(geo, phy, 0.05, minAlt = 5000, maxAlt = 100000, goo = "googleearthtree.kml")
-    BPEC.Phylo2GE(geo, phy, resol=1, goo = file)   
+    bpec.phylo2GE(geo, phy, resol=1, goo = file)   
     Output$Geo = geo
     Output$Phy = phy
 

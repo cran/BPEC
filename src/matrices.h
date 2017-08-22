@@ -11,9 +11,8 @@
 
 #include <R.h>
 #include <Rmath.h>
-#include <Rinternals.h> 
-#include "Rinterface.h"
-#include <R_ext/Utils.h>  
+//#include <Rinternals.h> 
+//#include <R_ext/Utils.h>  
 
 void ludcmp(int ddim,double **a,int *indx,double *d);
 void lubksb(int ddim,double **a,int *indx,double b[]);

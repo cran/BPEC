@@ -1,15 +1,31 @@
 # Export all names
-export(BPEC.ContourPlot,BPEC.CovariatesPlot,BPEC.GeoTree,BPEC.MCMC,BPEC.TreePlot)
+export(bpec.contourPlot,
+	bpec.covariatesPlot,
+	bpec.geoTree,
+	bpec.mcmc,
+	bpec.treePlot,
+	plot.bpec,
+	summary.bpec,
+        mean.bpec,	
+	bpec,		
+	bpec.loadCoords,
+	bpec.loadSeq)
+
+S3method(plot,bpec)
+S3method(print,bpec)
+S3method(summary,bpec)
+S3method(mean,bpec)
 
                                         # Import all packages listed as Imports or Depends
-import(igraph,
-    mvtnorm,
-    maptools,
-    sp,
-       maps,
-coda
+import( mvtnorm,
+    	maptools,
+    	sp,    	
+    	coda,
+	ggplot2,
+        igraph	
     )
 
+importFrom("fields", "world")
 importFrom(R2G2, curvy) 
 importFrom(phytools,read.newick)
 importFrom(ape,collapse.singles)
@@ -23,6 +39,9 @@ importFrom("graphics", "contour", "lines", "par", "points", "polygon","text")
 importFrom("methods", "slot")
 importFrom("stats", "dnorm", "quantile")
 importFrom("utils", "write.csv")
+importFrom("grDevices", "palette")
+importFrom("OpenStreetMap","openproj","openmap","autoplot.OpenStreetMap")
+importFrom("ggmap","ggmap","get_map")
+importFrom("utils", "count.fields", "read.table")
 
-useDynLib(BPEC)
-
+useDynLib(BPEC, .registration = TRUE)

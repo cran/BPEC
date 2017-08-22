@@ -1,20 +1,25 @@
-\name{BPEC.ContourPlot}
+\name{bpec.contourPlot}
 \encoding{ISO-8859-1}
 \Rdversion{1.1}
-\alias{BPEC.ContourPlot}
+\alias{bpec.contourPlot}
 \title{Plot contours of inferred clusters on geographical map}
 \description{Plots the contours for a set of population clusters, adding
 points for sampling locations, with larger points representing inferred
 ancestral locations. Assuming that the data input is in latitude and
 longitude form, the contour is superimposed onto the map of the
 corresponding region.    }
-\usage{BPEC.ContourPlot(MCMCout,CoordsLocs,GoogleEarth=0,colorcode=c(7,5,6,3,2,8,4,9,10))}
+\usage{bpec.contourPlot(bpecout, GoogleEarth = 0, mapType = 'plain', 
+colorCode = c(7,5,6,3,2,8,4,9,10), mapCentre = NULL, zoom = 6)}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{MCMCout}{\R object from \code{BPEC.MCMC} run }
-  \item{CoordsLocs}{The coordinates of the sampling locations}
+  \item{bpecout}{\R object from \code{bpec.mcmc} run }
 \item{GoogleEarth}{If 1, .kml files are produced which can be opened with GoogleEarth.}
- \item{colorcode}{(optional) A vector of color codes}	 
+
+	 
+\item{mapType}{Options are 'none' (no map shown in the background), 'plain' (outline shown only), 'google' (google maps), 'osm' (openstreetview maps).}
+ \item{colorCode}{(optional) A vector of color codes.}
+\item{mapCentre}{(optional) The longitude and latitude to use as the centre of the map. If not provided, the midpoint of sampling range will be used.  }
+\item{zoom}{The level of zoom into the map, default 6.}
 }
 \details{Contours with level 0.5 of the posterior mean centres amd covariances of the clusters are shown on the map, with colour representing cluster index. 
 Posterior samples are shown with semi-transparent filled contours, so that uncertainty can be represented directly on the map together with the posterior means. The sampling locations are shown as black dots, with the top three (in terms of posterior probability) ancestral locations represented by larger dots. 
@@ -34,24 +39,23 @@ S.P. Brooks, I. Manolopoulou, and B.C. Emerson (2007). \emph{Assessing the Effec
 #to use example dataset:
 data(MacrocnemisRawSeqs)
 data(MacrocnemisCoordsLocs)
-RawSeqs = MacrocnemisRawSeqs
-CoordsLocs = MacrocnemisCoordsLocs
+rawSeqs = MacrocnemisRawSeqs
+coordsLocs = MacrocnemisCoordsLocs
 
 ##to use your own dataset: 
-#RawSeqs = read.nexus.data('Haplotypes.nex')
-#CoordsLocs = read.table(
-#  'CoordsLocsFile.txt',header=FALSE,fill=TRUE,col.names=1:max(count.fields('CoordsLocsFile.txt'))
-#    )
+#rawSeqs = bpec.loadSeq('Haplotypes.nex')
+#coordsLocs = bpec.loadCoords("coordsLocsFile.txt")
+
 ## to set phenotypic/environmental covariate names, use (as appropriate)
-# colnames(CoordsLocs)[1:dims] = c('lat','long','cov1','cov2','cov3')   
+# colnames(coordsLocs)[1:dims] = c('lat','long','cov1','cov2','cov3')   
 ## where dims is the corresponding number of measurements available 
 ## (2 for latitude and longitude only, add one for each additional available measurement) 
 
 #for the analysis: 
-#check the helpfile of BPEC.MCMC using ?BPEC.MCMC
-colorcode = c(7,5,6,3,2,8) #default colour scheme
-MCMCout = BPEC.MCMC(RawSeqs,CoordsLocs,MaxMig=2,iter=20,ds=0,PostSamples=1,dims=8)
-BPEC.ContourPlot(MCMCout,CoordsLocs,GoogleEarth=0,colorcode) 
+#check the helpfile of bpec.mcmc using ?bpec.mcmc
+colorCode = c(7,5,6,3,2,8) #default colour scheme
+bpecout = bpec.mcmc(rawSeqs, coordsLocs, maxMig=2, iter=20, ds=0, postSamples=2, dims=8)
+bpec.contourPlot(bpecout, GoogleEarth=0, mapType ='plain', colorCode) 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
