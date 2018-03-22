@@ -8,8 +8,8 @@
 \alias{print.bpec}
 
 \title{Bayesian Phylogeographic and Ecological Clustering (BPEC)}
-
-\description{
+		
+\description{	
 Bayesian Phylogeographic and Ecological Clustering (BPEC) is aimed at identifying genetically, geographically and ecologically distinct population clusters and drawing inferences about ancestral locations. Given a dataset of DNA sequences (non-recombinant, typically mtDNA) and their respective geographical locations (longitude and latitude) along with additional environmental or phenotypic characteristics, the algorithm simultaneously draws inferences about the genealogy (in the form of a haplotype tree) and the population clustering. In addition, the algorithm identifies locations with high posterior probability of being ancestral. 
 }
 
@@ -40,62 +40,9 @@ bpec(seqsFile, coordsFile, dims = 2, iter = 100000, postSamples = 100,
 \item{...}{Other default options.}
 }
 
-\value{ \code{bpec} object with the following variables. 
-\itemize{
-\item{\code{input}: The values and data used as inputs.
-\itemize{
-\item \code{seqCountOrig}: The number of input sequences.
-\item  \code{seqLengthOrig}: The length of the input sequences. 
-\item  \code{iterR}: The number of MCMC iterations. 
-\item  \code{dsR}: The parsimony relaxation parameter. 
-\item  \code{coordsLocsR}: The input coordinate and observation file. 
-\item  \code{coordsDimsR}: The input dimension (2 for purely geographical data) .
-\item  \code{locNoR}: The number of distinct sampling locations. 
-\item  \code{locDataR}: The list of coordinates of each observation. 
-}
-}
+\value{ \code{bpec} object which can be analysed using \code{input()}, \code{data()}, \code{clust()}, \code{tree()} and \code{mcmc()}.}
 
-\item{\code{data}: Various post-processing quantities (before the MCMC).
-\itemize{
-\item \code{seqR}: The output DNA sequences of distinct haplotypes, collapsed to effective nucleotide sites (both sampled and missing sequences which were inferred).
-\item \code{seqsFileR}: A vector of the numerical labels of each haplotype.
-\item \code{seqLabelsR}: Correspondence vector for each of the processed observations to the original haplotype labels. 
-\item \code{seqIndicesR}: Correspondence vector for each of the original observations to the resulting haplotype labels.
-\item \code{seqLengthR}: The effective length of the input sequences, given by the number of variable nucleotide sites which are informative. In other words, if two different nucleotide sites are variable in exactly the same haplotypes, then they effectively provide information of a single site.
-\item \code{noSamplesR}: The number of times each haplotype was observed in the sample. 
-\item \code{countR}: The number of output sequences. 
-}
-}
-\item{\code{clust}: Various posterior sampling summaries about the clustering.
-\itemize{
-\item \code{sampleMeansR}  A set of posterior samples of the cluster means (i.e. centres).
-\item \code{sampleCovsR}: A set of posterior samples of the cluster covariances (i.e. shapes).
-\item \code{sampleIndicesR}: A set of posterior samples of the cluster allocations of each observation. 
-\item \code{clusterProbsR}: For each haplotype, posterior probabilities that it belongs to each cluster.
-}
-}
 
-\item{\code{tree}: Various posterior sampling summaries about the tree.
-\itemize{
-\item \code{cladoR}: The MAP adjacency matrix for the tree in vectorised format: this means that for two haplotypes i,j, the (i,j)th entry of the matrix is 1 if the haplotypes are connected in the network and 0 otherwise.
-\item \code{levelsR}: Starting from the root (level 0) all the way to the tips, the discrete depth for the Maximum A Posteriori tree plot.       
-\item \code{edgeTotalProbR}: Posterior probabilities of each edge being present, i.e. corresponding to a mutation which occurred.
-\item \code{rootProbsR}: The posterior probability per chain that each haplotype was the root of the tree.
-\item \code{treeEdgesR}: The set of edges (from and to haplotypes) of the Maximum A Posteriori haplotype tree (could be used in another program if needed).
-\item \code{rootLocProbsR}: Vector of posterior probabilities of each sampling location being the ancestral location.
-\item \code{migProbsR}: The posterior probability of 0...maxMig migrations.
-}
-}
-
-\item{\code{mcmc}: Various MCMC tuning parameters and error codes.
-\itemize{
-\item \code{MCMCparamsR}: Various MCMC tuning parameters, useful for development. 
-\item \code{codaInput}: Posterior samples from the two MCMC chains for the cluster means, cluster covariance entries, as well as the root haplotype. Note that, since the number of clusters varies from iteration to iteration, some samples are simply draws from the prior (corresponding to empty clusters). This variable can be loaded directly into the \code{coda} package for convergence analysis.   
-\item \code{errorCodeR}: error code, 0 if no problems with running the MCMC, 1 otherwise.     
-}
-}
-}
-}
 \details{
 bpec requires 2 input files in order to run:
 
@@ -143,67 +90,99 @@ S.P. Brooks, I. Manolopoulou, and B.C. Emerson (2007). \emph{Assessing the Effec
 \keyword{phylogenetics}
 
 \examples{
-\dontrun{
-# if you want to load the example burnet moth dataset
-data(TransalpinaRawSeqs)
-data(TransalpinaCoordsLocs)
-rawSeqs = TransalpinaRawSeqs
-coordsLocs = TransalpinaCoordsLocs
-
-##if you want to use your own dataset, use setwd() to enter the correct folder, 
-##then run the command below, changing the input parameters if necessary
- #rawSeqs = bpec.loadSeq('haplotypes.nex')
- #coordsLocs = bpec.loadCoords("coordsLocsFile.txt")
-
- ## to set phenotypic/environmental covariate names, use (as appropriate)
-# colnames(CoordsLocs)[1:dims] = c('lat','long','cov1','cov2','cov3')  
-## where dims is the corresponding number of measurements available 
-## (2 for latitude and longitude only, add one for each additional available measurement) 
- 
-dims = 2 #this is 2 if you only have geographical longitude/latitude. 
-#(add 1 for each environmental or phenotypic covariate)
-maxMig = 5 #you will need a higher maximum number of migrations, suggest 7
-ds = 0 #start with ds=0 and increase to 1 and then to 2
-iter = 10000 #you will need far more iterations for convergence, start with 100,000
-postSamples = 2 #you will need at least 100 saved posterior samples
-
-#run the Markov chain Monte Carlo sampler
-bpecout = bpec.mcmc(rawSeqs,coordsLocs,maxMig,iter,ds,postSamples,dims)
-
-par(mar=c(0,0,0,0),pty="m",mfrow=c(1,2)) #No plot margins. Contours and tree side-by-side
-# plot geographical cluster contour map
-bpec.contourPlot(bpecout, GoogleEarth=0, mapType = 'plain') 
-
-# plot tree network with cluster indicators
-bpec.Tree = bpec.treePlot(bpecout)  
-
-## if you want to load the example Brown Frog dataset
+## if you want to load the `mini' example Brown Frog dataset
 data(MacrocnemisRawSeqs)
-data(MacrocnemisCoordsLocs)
-RawSeqs = MacrocnemisRawSeqs
-CoordsLocs = MacrocnemisCoordsLocs
+data(MacrocnemisCoordsLocsMini)
+rawSeqs <- MacrocnemisRawSeqs
+coordsLocs <- MacrocnemisCoordsLocsMini
 
-dims = 8 #this is 2 if you only have geographical longitude/latitude. 
+dims <- 3 #this is 2 if you only have geographical longitude/latitude. 
 #(add 1 for each environmental or phenotypic covariate)
-maxMig = 4 #you will need a higher maximum number of migrations, suggest 7
-ds = 2 #start with ds=0 and increase to 1 and then to 2
-iter = 10000 #you will need far more iterations for convergence, start with 100,000
-postSamples = 2 #you will need at least 100 saved posterior samples
+maxMig <- 2 #you will need a higher maximum number of migrations, suggest 7
+ds <- 0 #start with ds=0 and increase to 1 and then to 2
+iter <- 1000 #you will need far more iterations for convergence, start with 100,000
+postSamples <- 100 #you will need at least 100 saved posterior samples
 
 #run the Markov chain Monte Carlo sampler
-bpecout = bpec.mcmc(rawSeqs,coordsLocs,maxMig,iter,ds,postSamples,dims)
+bpecout <- bpec.mcmc(rawSeqs,coordsLocs,maxMig,iter,ds,postSamples,dims)
 
 par(mar=c(0,0,0,0),pty="m",mfrow=c(1,2))  #no plot margins, plot contours and tree side-by-side
 # plot geographical cluster contour map
 bpec.contourPlot(bpecout,GoogleEarth=0) 
 
 # plot tree network with cluster indicators
-bpec.Tree = bpec.treePlot(bpecout)   
+bpec.Tree <- bpec.treePlot(bpecout)   
+
+# now also plot the environmental covariates
+ bpec.covariatesPlot(bpecout) 
+ 
+ bpec.Geo <- bpec.geoTree(bpecout,file="GoogleEarthTree.kml")
+
+
+\dontrun{
+# if you want to load the example burnet moth dataset
+data(TransalpinaRawSeqs)
+data(TransalpinaCoordsLocs)
+rawSeqs <- TransalpinaRawSeqs
+coordsLocs <- TransalpinaCoordsLocs
+
+##if you want to use your own dataset, use setwd() to enter the correct folder, 
+##then run the command below, changing the input parameters if necessary
+ #rawSeqs <- bpec.loadSeq('haplotypes.nex')
+ #coordsLocs <- bpec.loadCoords("coordsLocsFile.txt")
+
+ ## to set phenotypic/environmental covariate names manually, use (as appropriate)
+# colnames(CoordsLocs)[1:dims] <- c('lat','long','cov1','cov2','cov3')  
+## where dims is the corresponding number of measurements available 
+## (2 for latitude and longitude only, add one for each additional available measurement) 
+ 
+dims <- 2 #this is 2 if you only have geographical longitude/latitude. 
+#(add 1 for each environmental or phenotypic covariate)
+maxMig <- 5 #you will need a higher maximum number of migrations, suggest 7
+ds <- 0 #start with ds=0 and increase to 1 and then to 2
+iter <- 10000 #you will need far more iterations for convergence, start with 100,000
+postSamples <- 2 #you will need at least 100 saved posterior samples
+
+#run the Markov chain Monte Carlo sampler
+bpecout <- bpec.mcmc(rawSeqs,coordsLocs,maxMig,iter,ds,postSamples,dims)
+
+par(mar=c(0,0,0,0),pty="m",mfrow=c(1,2)) #No plot margins. Contours and tree side-by-side
+# plot geographical cluster contour map
+bpec.contourPlot(bpecout, GoogleEarth=0, mapType = 'plain') 
+
+# plot tree network with cluster indicators
+bpec.Tree <- bpec.treePlot(bpecout)  
+
+## if you want to load the example Brown Frog dataset
+data(MacrocnemisRawSeqs)
+data(MacrocnemisCoordsLocs)
+rawSeqs <- MacrocnemisRawSeqs
+coordsLocs <- MacrocnemisCoordsLocs
+
+dims <- 8 #this is 2 if you only have geographical longitude/latitude. 
+#(add 1 for each environmental or phenotypic covariate)
+maxMig <- 4 #you will need a higher maximum number of migrations, suggest 7
+ds <- 2 #start with ds=0 and increase to 1 and then to 2
+iter <- 10000 #you will need far more iterations for convergence, start with 100,000
+postSamples <- 2 #you will need at least 100 saved posterior samples
+
+#run the Markov chain Monte Carlo sampler
+bpecout <- bpec.mcmc(rawSeqs,coordsLocs,maxMig,iter,ds,postSamples,dims)
+
+par(mar=c(0,0,0,0),pty="m",mfrow=c(1,2))  #no plot margins, plot contours and tree side-by-side
+# plot geographical cluster contour map
+bpec.contourPlot(bpecout,GoogleEarth=0) 
+
+# plot tree network with cluster indicators
+bpec.Tree <- bpec.treePlot(bpecout)   
 
 # now also plot the environmental covariates
  par(mfrow=c(2,3)) #split the plot window into 2x3 to fit all the covariates
  bpec.covariatesPlot(bpecout) 
  
- bpec.Geo = bpec.geoTree(bpecout,file="GoogleEarthTree.kml")
+ bpec.Geo <- bpec.geoTree(bpecout,file="GoogleEarthTree.kml")
  }
+
+
+
 }

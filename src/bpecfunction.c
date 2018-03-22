@@ -950,7 +950,7 @@ int Sizeofnocolgroup3(int i,int k,int remb,int **quickclado)/*here i is the numb
 		  break;
 		}
 	      if(centrall[j][w3]==-1&&ffnew[i]==0)
-		{
+		{		  
 		  centrall[j][w3]=i;
 		  break;
 		}
@@ -2340,7 +2340,7 @@ double clusteringtoclustering(int dimwish,int *tempCe,int *tempGroups,int **temp
     done=(int *)calloc(20*datsiz[0],sizeof(int));
     ddon=(int *)calloc(20*datsiz[0],sizeof(int));
   }
-  ffnew=(int *)calloc((count),sizeof(int));//this will tell us if we're done this central yet. 
+  ffnew=(int *)calloc(Max(count,-1,maxMig+2),sizeof(int));//this will tell us if we're done this central yet. 
   fffnew=(int *)calloc((tempmaxmut+2),sizeof(int));//this will tell us if we're done this central yet. 
   for(j=0;j<tempmaxmut+1;j++)
     {
@@ -8269,7 +8269,7 @@ void bpecfunction(double *modeInitial,char **seqR,double *coordsLocsR,double *co
 	    other=(int *)calloc((maxmig[0]+1),sizeof(int));//the sizes
 	    various=(int *)calloc(count,sizeof(int));//substitute for don. 		
 	    sorted=(int *)calloc(count,sizeof(int));
-	    ffnew=(int *)calloc(count,sizeof(int));
+	    ffnew=(int *)calloc(Max(count,-1,maxMig+2),sizeof(int));
 	    if(count>1)
 	      {
 		don=(int *)calloc(20*count,sizeof(int));
@@ -9518,7 +9518,7 @@ void bpecfunction(double *modeInitial,char **seqR,double *coordsLocsR,double *co
 		  done=(int *)calloc(20*datsiz[0],sizeof(int));
 		  don=(int *)calloc(20*datsiz[0],sizeof(int));
 		}
-	      ffnew=(int *)calloc((count),sizeof(int));//this will tell us if we're done this central yet. 
+	      ffnew=(int *)calloc(Max(count,-1,maxMig+2),sizeof(int));//this will tell us if we're done this central yet. 
 	      fffnew=(int *)calloc((maxmig[0]+2),sizeof(int));//this will tell us if we're done this central yet. 
 	      for(j=0;j<maxmig[0]+1;j++)
 		{
@@ -11724,7 +11724,7 @@ void bpecfunction(double *modeInitial,char **seqR,double *coordsLocsR,double *co
 			  done=(int *)calloc(20*datsiz[0],sizeof(int));
 			  don=(int *)calloc(20*datsiz[0],sizeof(int));
 			}
-		      ffnew=(int *)calloc((count),sizeof(int));//this will tell us if we're done this central yet. 
+		      ffnew=(int *)calloc(Max(count,-1,maxMig+2),sizeof(int));//this will tell us if we're done this central yet. 
 		      fffnew=(int *)calloc((maxmig[1]+2),sizeof(int));//this will tell us if we're done this central yet. 
 		      for(j=0;j<maxmig[1]+1;j++)
 			{

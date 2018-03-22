@@ -1,4 +1,4 @@
-bpec.contourPlot <- function(bpecout, GoogleEarth = 0, mapType = 'plain', colorCode = c(7,5,6,3,2,8,4,9,10), mapCentre = NULL, zoom = 6) {
+bpec.contourPlot <- function(bpecout, GoogleEarth = 0, colorCode = c(7,5,6,3,2,8,4,9,10), mapType = 'plain', mapCentre = NULL, zoom = 6) {
     writeLines("Creating geographical contour plot...")
     
     if (mapType == 'none') {
@@ -105,8 +105,18 @@ bpec.contourPlot <- function(bpecout, GoogleEarth = 0, mapType = 'plain', colorC
         coordsLocs = as.data.frame(coordsLocs)
         xtot=seq(min(min(meanSamples[2, fullClust == 1, ] - 3 * sqrt(covSamples[2, 2, fullClust == 1, ]), na.rm = TRUE)), max(max(meanSamples[2, fullClust == 1, ] + 3 * sqrt(covSamples[2, 2, fullClust == 1, ]), na.rm = TRUE)), length.out = NCPR)    
         ytot=seq(min(min(meanSamples[1, fullClust == 1, ] - 3 * sqrt(covSamples[1, 1, fullClust == 1, ]), na.rm = TRUE)), max(max(meanSamples[1, fullClust == 1, ] + 3 * sqrt(covSamples[1, 1, fullClust == 1, ]), na.rm = TRUE)), length.out = NCPR)         
-        
-        map = OpenStreetMap::openmap(c(lat = max(ytot), lon = min(xtot)), c(lat = min(ytot), lon = max(xtot)), type = "osm")
+
+        if(!is.null(mapCentre)) {
+            y1 = max(mapCentre[2] + (max(ytot) - min(ytot))/2, max(ytot))
+            x1 = min(mapCentre[1] - (max(xtot) - min(xtot))/2, min(xtot))
+
+            y2 = min(mapCentre[2] - (max(ytot) - min(ytot))/2, min(ytot))
+            x2 = max(mapCentre[1] + (max(xtot) - min(xtot))/2, max(xtot))
+            
+            map = OpenStreetMap::openmap(c(lat = y1, lon = x1), c(lat = y2, lon = x2), type = "osm")
+        } else {
+            map = OpenStreetMap::openmap(c(lat = max(ytot), lon = min(xtot)), c(lat = min(ytot), lon = max(xtot)), type = "osm")
+        }
         mapLatLon = OpenStreetMap::openproj(map)
         contourMap = autoplot.OpenStreetMap(mapLatLon)
         

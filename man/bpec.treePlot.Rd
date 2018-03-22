@@ -36,22 +36,22 @@ G. Valiente (2009). \emph{Combinational Pattern Matching Algorithms in Computati
 #to use example dataset:
 data(MacrocnemisRawSeqs)
 data(MacrocnemisCoordsLocs)
-coordsLocs = MacrocnemisCoordsLocs
-rawSeqs = MacrocnemisRawSeqs
+coordsLocs <- MacrocnemisCoordsLocs
+rawSeqs <- MacrocnemisRawSeqs
 
 ##to use your own dataset 
-#rawSeqs = bpec.loadSeq('haplotypes.nex')
-#coordsLocs = bpec.loadCoords("coordsLocsFile.txt")
+#rawSeqs <- bpec.loadSeq('haplotypes.nex')
+#coordsLocs <- bpec.loadCoords("coordsLocsFile.txt")
 
-## to set phenotypic/environmental covariate names, use (as appropriate)
-# colnames(coordsLocs)[1:dims] = c('lat','long','cov1','cov2','cov3')   
+## to set phenotypic/environmental covariate names manually, use (as appropriate)
+# colnames(coordsLocs)[1:dims] <- c('lat','long','cov1','cov2','cov3')   
 ## where dims is the corresponding number of measurements available 
 ## (2 for latitude and longitude only, add one for each additional available measurement) 
 
 #to run the MCMC sampler: 
 
-bpecout = bpec.mcmc(rawSeqs,coordsLocs,maxMig=2,iter=50,ds=0,postSamples=1,dims=8)	
-bpec.Tree = bpec.treePlot(bpecout)
+bpecout <- bpec.mcmc(rawSeqs, coordsLocs, maxMig = 2, iter = 50, ds = 0, postSamples = 1, dims = 8)
+bpec.Tree <- bpec.treePlot(bpecout)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

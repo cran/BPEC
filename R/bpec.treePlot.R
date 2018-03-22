@@ -1,16 +1,16 @@
 bpec.treePlot <- function(bpecout,colorCode=c(7,5,6,3,2,8,4,9,10)) {
   writeLines("Creating clustered tree plot...")
-  count = bpecout$data$countR
+  count = bpecout$preproc$countR
   rootProbMean = (bpecout$tree$rootProbsR[1, ] + bpecout$tree$rootProbsR[2, ]) / 2
   
     
   root = which.max(rootProbMean)
   
   levels = bpecout$tree$levelsR
-  datSiz = bpecout$data$noSamplesR
+  datSiz = bpecout$preproc$noSamplesR
   clado = bpecout$tree$cladoR
   clusterProbs = bpecout$clust$clusterProbsR
-  seqLabels = bpecout$data$seqsFileR[bpecout$data$seqLabelsR]
+  seqLabels = bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR]
 
   if (length(seqLabels) < count) {
      seqLabels = c(seqLabels, rep(0, count - length(seqLabels)))
@@ -110,7 +110,7 @@ bpec.treePlot <- function(bpecout,colorCode=c(7,5,6,3,2,8,4,9,10)) {
 #  writeLines("Creating GoogleEarth Tree plot...")
   treeEdges = bpecout$tree$treeEdges
   clustProb = bpecout$clust$clusterProbsR
-  count = bpecout$data$countR
+  count = bpecout$preproc$countR
   dims = dim(bpecout$clust$sampleMeansR)[1]
 ####################################################################
                                         # required libraries igraph, R2G2, ape

@@ -4,10 +4,11 @@
 \alias{bpec.loadCoords}
 \title{Load location data}
 \description{Create \R objects of  locations from  corresponding file. }
-\usage{bpec.loadCoords(coordsFile)}
+\usage{bpec.loadCoords(coordsFile, header = FALSE)}
 
 \arguments{
-\item{coordsFile}{the name of the coordinate and sequence file in full, eg "coordsLocs.txt".}
+\item{coordsFile}{The name of the coordinate and sequence file in full, eg "coordsLocs.txt".}
+\item{header}{If TRUE, then the first row of the file is assumed to be variable names. }
  }
 
 \value{
@@ -19,9 +20,16 @@
 
 \author{Ioanna Manolopoulou & Axel Hille}
 \examples{
+
+#to load existing example file from BPEC
+coordsFile <- system.file("coordsLocsFile.txt",package = "BPEC")
+coordsLocs <- bpec.loadCoords(coordsFile, header = TRUE)
+
 \dontrun{
-coordsLocs = bpec.loadCoords('coordsLocs.txt')
+#to load a different input file "coordsLocs.txt"
+coordsLocs <- bpec.loadCoords("coordsLocs.txt", header = TRUE)
 }
+
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

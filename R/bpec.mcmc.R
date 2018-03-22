@@ -138,8 +138,8 @@ bpec.mcmc <- function(rawSeqs, coordsLocs, maxMig, iter, ds, postSamples=0, dims
         for(l in 1:2) {
           chainMeans[j,i,l] = mean(MCMCout$sampleMeansR[j, i, (1+(l-1) * postSamples) : (l * postSamples)], na.rm=TRUE)
         }
-        if (sum(is.na(chainMeans[j, i, ])) == 0) {
-          if (abs(chainMeans[j, i, 1] - chainMeans[j, i, 2]) > 0.05*(max(coordinates[, j]) - min(coordinates[, j]))) {
+        if (sum(is.na(chainMeans[j, i, ])) == 0) {    
+          if (abs(chainMeans[j, i, 1] - chainMeans[j, i, 2]) > 0.05 * (max(coordinates[, j]) - min(coordinates[, j])) && mean(is.na(MCMCout$sampleMeansR[j, i, ])) < 0.5) {
               clusterNonConvergence[i] = 1
               if (flag == 0) {
                       writeLines("NO CLUSTER CONVERGENCE: You need to re-run the sampler with more iterations")
@@ -239,9 +239,9 @@ bpec.mcmc <- function(rawSeqs, coordsLocs, maxMig, iter, ds, postSamples=0, dims
     chain2 = array(MCMCout$sampleClusterCodaR[, , (dim3 / 2 + 1) : (dim3)], dim = c(dim1 * dim2, dim3 / 2))
     chain2 = rbind(chain2,MCMCout$sampleRootCodaR[(dim3 / 2 + 1) : (dim3)])
     MCMCout$codaInput = list()
-    MCMCout$codaInput$line1 = mcmc(t(chain1), start = 1, end = dim3/2, thin = 1)
-    MCMCout$codaInput$line2 = mcmc(t(chain2), start = 1, end = dim3/2, thin = 1)
-    MCMCout$codaInput = mcmc.list(MCMCout$codaInput)
+    MCMCout$codaInput$line1 = coda::mcmc(t(chain1), start = 1, end = dim3/2, thin = 1)
+    MCMCout$codaInput$line2 = coda::mcmc(t(chain2), start = 1, end = dim3/2, thin = 1)
+    MCMCout$codaInput = coda::mcmc.list(MCMCout$codaInput)
     MCMCout$seqLengthOrig = as.numeric(length(rawSeqsOrig[[1]]))
     MCMCout$seqCountOrig = as.numeric(length(rawSeqsOrig))
     # }
@@ -278,16 +278,17 @@ bpec.mcmc <- function(rawSeqs, coordsLocs, maxMig, iter, ds, postSamples=0, dims
   bpecout$input$coordsDimsR = MCMCout$coordsDimsR
   bpecout$input$locNoR = MCMCout$locNoR
   bpecout$input$locDataR = MCMCout$locDataR
+  bpecout$input$locDataR = bpecout$input$locDataR[as.logical(rowSums(bpecout$input$locDataR != 0)), ]
   
-  bpecout$data = list()
-  bpecout$data$seqR = MCMCout$seqR
+  bpecout$preproc = list()
+  bpecout$preproc$seqR = MCMCout$seqR
  
-  bpecout$data$seqsFileR = MCMCout$seqsFileR
-  bpecout$data$seqLabelsR = MCMCout$seqLabelsR
-  bpecout$data$seqIndicesR = lapply(rawSeqs, function(elemnt) which(as.logical(lapply(unique(rawSeqs),function(uniquelement) all(uniquelement == elemnt)))))
-  bpecout$data$seqLengthR = MCMCout$seqLengthR
-  bpecout$data$noSamplesR = MCMCout$noSamplesR
-  bpecout$data$countR = MCMCout$countR
+  bpecout$preproc$seqsFileR = MCMCout$seqsFileR
+  bpecout$preproc$seqLabelsR = MCMCout$seqLabelsR
+  bpecout$preproc$seqIndicesR = lapply(rawSeqs, function(elemnt) which(as.logical(lapply(unique(rawSeqs),function(uniquelement) all(uniquelement == elemnt)))))
+  bpecout$preproc$seqLengthR = MCMCout$seqLengthR
+  bpecout$preproc$noSamplesR = MCMCout$noSamplesR
+  bpecout$preproc$countR = MCMCout$countR
   
   
   bpecout$clust = list()
@@ -305,21 +306,21 @@ bpec.mcmc <- function(rawSeqs, coordsLocs, maxMig, iter, ds, postSamples=0, dims
   
   bpecout$tree = list()
   bpecout$tree$cladoR = MCMCout$cladoR
-  templength = length(bpecout$data$seqsFileR[bpecout$data$seqLabelsR])
+  templength = length(bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR])
    bpecout$tree$levelsR = MCMCout$levelsR
-  names(bpecout$tree$levelsR)[1:templength] = bpecout$data$seqsFileR[bpecout$data$seqLabelsR]
+  names(bpecout$tree$levelsR)[1:templength] = bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR]
   bpecout$tree$edgeTotalProbR = MCMCout$edgeTotalProbR
   rownames(bpecout$tree$edgeTotalProbR) = 1:dim(bpecout$tree$edgeTotalProbR)[1]
   colnames(bpecout$tree$edgeTotalProbR) = 1:dim(bpecout$tree$edgeTotalProbR)[2]
-  rownames(bpecout$tree$edgeTotalProbR)[1:templength] = bpecout$data$seqsFileR[bpecout$data$seqLabelsR]
-  colnames(bpecout$tree$edgeTotalProbR)[1:templength] = bpecout$data$seqsFileR[bpecout$data$seqLabelsR]
-  bpecout$tree$rootProbsR = t(array(MCMCout$rootProbsR[1:(2*bpecout$data$countR)], dim = c(bpecout$data$countR,2)))
+  rownames(bpecout$tree$edgeTotalProbR)[1:templength] = bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR]
+  colnames(bpecout$tree$edgeTotalProbR)[1:templength] = bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR]
+  bpecout$tree$rootProbsR = t(array(MCMCout$rootProbsR[1:(2*bpecout$preproc$countR)], dim = c(bpecout$preproc$countR,2)))
   
   bpecout$tree$rootProbsR[1, ] = bpecout$tree$rootProbsR[1, ] / sum(bpecout$tree$rootProbsR[1, ])
   bpecout$tree$rootProbsR[2, ] = bpecout$tree$rootProbsR[2, ] / sum(bpecout$tree$rootProbsR[2, ])
   
   colnames(bpecout$tree$rootProbsR) = 1:dim(bpecout$tree$rootProbsR)[2]
-  colnames(bpecout$tree$rootProbsR)[1:templength] = bpecout$data$seqsFileR[bpecout$data$seqLabelsR]
+  colnames(bpecout$tree$rootProbsR)[1:templength] = bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR]
  
   bpecout$tree$treeEdgesR = MCMCout$treeEdgesR
   

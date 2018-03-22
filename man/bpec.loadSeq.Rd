@@ -20,8 +20,13 @@
 
 \author{Ioanna Manolopoulou & Axel Hille}
 \examples{
+#to load existing example file from BPEC
+seqsFile <- system.file("haplotypes.nex",package = "BPEC")
+rawSeqs <- bpec.loadSeq(seqsFile)
+
 \dontrun{
-rawSeqs = bpec.loadSeq('haplotypes.nex')
+#to load a different input file "haplotypes.nex"
+rawSeqs <- bpec.loadSeq('haplotypes.nex')
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

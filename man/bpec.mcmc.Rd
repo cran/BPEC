@@ -38,62 +38,8 @@ The space of possible clusterings is vast and highly multi-modal. The migration 
    so, in the first location (lat/long 36.88, -5.42) you have 2 sampled individuals with   haplotypes 24,25, in the second location  eight individuals etc. Sequences don't necessarily need to be collapsed onto haplotypes, the program should take  care of it.
 
 }
-\value{\code{bpec} object with the following variables. 
-\itemize{
-\item{\code{input}: The values and data used as inputs.
-\itemize{
-\item \code{seqCountOrig}: The number of input sequences.
-\item  \code{seqLengthOrig}: The length of the input sequences. 
-\item  \code{iterR}: The number of MCMC iterations. 
-\item  \code{dsR}: The parsimony relaxation parameter. 
-\item  \code{coordsLocsR}: The input coordinate and observation file. 
-\item  \code{coordsDimsR}: The input dimension (2 for purely geographical data) .
-\item  \code{locNoR}: The number of distinct sampling locations. 
-\item  \code{locDataR}: The list of coordinates of each observation. 
-}
-}
+\value{\code{bpec} object which can be analysed and summarised using the accessor functions \code{input()}, \code{dataSummary()}, \code{clust()}, \code{tree()}, \code{mcmc()}.}
 
-\item{\code{data}: Various post-processing quantities (before the MCMC).
-\itemize{
-\item \code{seqR}: The output DNA sequences of distinct haplotypes, collapsed to effective nucleotide sites (both sampled and missing sequences which were inferred).
-\item \code{seqsFileR}: A vector of the numerical labels of each haplotype.
-\item \code{seqLabelsR}: Correspondence vector for each of the processed observations to the original haplotype labels. 
-\item \code{seqIndicesR}: Correspondence vector for each of the original observations to the resulting haplotype labels.
-\item \code{seqLengthR}: The effective length of the input sequences, given by the number of variable nucleotide sites which are informative. In other words, if two different nucleotide sites are variable in exactly the same haplotypes, then they effectively provide information of a single site.
-\item \code{noSamplesR}: The number of times each haplotype was observed in the sample. 
-\item \code{countR}: The number of output sequences. 
-}
-}
-\item{\code{clust}: Various posterior sampling summaries about the clustering.
-\itemize{
-\item \code{sampleMeansR}  A set of posterior samples of the cluster means (i.e. centres).
-\item \code{sampleCovsR}: A set of posterior samples of the cluster covariances (i.e. shapes).
-\item \code{sampleIndicesR}: A set of posterior samples of the cluster allocations of each observation. 
-\item \code{clusterProbsR}: For each haplotype, posterior probabilities that it belongs to each cluster.
-}
-}
-
-\item{\code{tree}: Various posterior sampling summaries about the tree.
-\itemize{
-\item \code{cladoR}: The MAP adjacency matrix for the tree in vectorised format: this means that for two haplotypes i,j, the (i,j)th entry of the matrix is 1 if the haplotypes are connected in the network and 0 otherwise.
-\item \code{levelsR}: Starting from the root (level 0) all the way to the tips, the discrete depth for the Maximum A Posteriori tree plot.       
-\item \code{edgeTotalProbR}: Posterior probabilities of each edge being present, i.e. corresponding to a mutation which occurred.
-\item \code{rootProbsR}: The posterior probability per chain that each haplotype was the root of the tree.
-\item \code{treeEdgesR}: The set of edges (from and to haplotypes) of the Maximum A Posteriori haplotype tree (could be used in another program if needed).
-\item \code{rootLocProbsR}: Vector of posterior probabilities of each sampling location being the ancestral location.
-\item \code{migProbsR}: The posterior probability of 0...maxMig migrations.
-}
-}
-
-\item{\code{mcmc}: Various MCMC tuning parameters and error codes.
-\itemize{
-\item \code{MCMCparamsR}: Various MCMC tuning parameters, useful for development. 
-\item \code{codaInput}: Posterior samples from the two MCMC chains for the cluster means, cluster covariance entries, as well as the root haplotype. Note that, since the number of clusters varies from iteration to iteration, some samples are simply draws from the prior (corresponding to empty clusters). This variable can be loaded directly into the \code{coda} package for convergence analysis.   
-\item \code{errorCodeR}: error code, 0 if no problems with running the MCMC, 1 otherwise.     
-}
-}
-}
-}
 \note{\code{bpec.mcmc} uses  \code{cexcept.h 2.0.1} (an interface for exception-handling in ANSI C) developed by Adam M. Costello and Cosmin Truta.
 }
 
@@ -110,20 +56,20 @@ I. Manolopoulou, L. Legarreta, B.C. Emerson, S. Brooks, and S. Tavaré (2011). A 
 #to use the example dataset:
 data(MacrocnemisRawSeqs)
 data(MacrocnemisCoordsLocs)
-coordsLocs = MacrocnemisCoordsLocs
-rawSeqs = MacrocnemisRawSeqs
+coordsLocs <- MacrocnemisCoordsLocs
+rawSeqs <- MacrocnemisRawSeqs
 
 ##to use your own dataset 
-#rawSeqs = read.nexus.data('Haplotypes.nex')
-#coordsLocs = bpec.loadCoords("coordsLocsFile.txt")
+#rawSeqs <- bpec.loadSeq('Haplotypes.nex')
+#coordsLocs <- bpec.loadCoords("coordsLocsFile.txt")
 
-## to set phenotypic/environmental covariate names, use (as appropriate)
-# colnames(coordsLocs)[1:dims] = c('lat','long','cov1','cov2','cov3')   
+## to set phenotypic/environmental covariate names manually, use (as appropriate)
+# colnames(coordsLocs)[1:dims] <- c('lat','long','cov1','cov2','cov3')   
 ## where dims is the corresponding number of measurements available 
 ## (2 for latitude and longitude only, add one for each additional available measurement) 
 
 #to run the MCMC sampler: 
-bpecout = bpec.mcmc(rawSeqs,coordsLocs,maxMig=2,iter=50,ds=0,postSamples=5,dims=8)
+bpecout <- bpec.mcmc(rawSeqs, coordsLocs, maxMig = 2, iter = 50, ds = 0, postSamples = 5, dims = 8)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

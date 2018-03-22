@@ -191,7 +191,7 @@ bpec.geoTree <- function(bpecout, file="GoogleEarthTree.kml") {
     writeLines("Creating GoogleEarth Tree plot...")
     treeEdges = bpecout$tree$treeEdges
     clustprob = bpecout$clust$clusterProbsR
-    count = bpecout$data$countR
+    count = bpecout$preproc$countR
     coordsLocs = bpecout$input$coordsLocsR
     dims = dim(bpecout$clust$sampleMeansR)[1]
 ####################################################################
@@ -254,7 +254,7 @@ bpec.geoTree <- function(bpecout, file="GoogleEarthTree.kml") {
         {
             coordsLocs = cbind(coordsLocs, seq(1, nrow(coordsLocs)))
         }
-    coordsLocsSingle = array(0,dim = c(sum(bpecout$data$noSamplesR), 3))
+    coordsLocsSingle = array(0,dim = c(sum(bpecout$preproc$noSamplesR), 3))
     counter = 1
     for(i in 1:nrow(coordsLocs))
         {

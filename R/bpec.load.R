@@ -3,10 +3,13 @@ bpec.loadSeq = function(seqsFile) {
   return(rawSeqs)
 }
 
-bpec.loadCoords = function(coordsFile) {
- coordsLocs = read.table(
-  coordsFile, header = FALSE, fill = TRUE, col.names = 1:max(count.fields(coordsFile))
-  )
+bpec.loadCoords = function(coordsFile, header = FALSE) {
+    coordsLocs = read.table(coordsFile, header = FALSE, fill = TRUE)
+    
+    if(header == TRUE) {
+        names(coordsLocs) = as.character(unlist(as.matrix(coordsLocs[1, ])))
+        coordsLocs = coordsLocs[-1, ]
+    }
  return(coordsLocs)
 }
 
