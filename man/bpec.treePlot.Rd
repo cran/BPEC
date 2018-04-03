@@ -7,7 +7,7 @@
   a haplotype tree plot, starting from the root at the top. The size of each haplotype node represents the
 number of times it was sampled, and color represents population
 cluster. Unsampled haplotypes are represented by black dots. Thickness of tree edges represents posterior certainty, with thinner edges corresponding to higher uncertainty. }
-\usage{bpec.treePlot(bpecout,colorCode=c(7,5,6,3,2,8,4,9,10))}
+\usage{bpec.treePlot(bpecout,colorCode=c(7,5,6,3,2,8,4,9))}
 
 \arguments{
   \item{bpecout}{\R object from \code{bpec.mcmc} run. }

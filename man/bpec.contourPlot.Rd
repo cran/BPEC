@@ -9,7 +9,7 @@ ancestral locations. Assuming that the data input is in latitude and
 longitude form, the contour is superimposed onto the map of the
 corresponding region.    }
 \usage{bpec.contourPlot(bpecout, GoogleEarth = 0, 
-colorCode = c(7,5,6,3,2,8,4,9,10), mapType = 'plain', mapCentre = NULL, zoom = 6)}
+colorCode = c(7,5,6,3,2,8,4,9), mapType = 'plain', mapCentre = NULL, zoom = 6)}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{bpecout}{\R object from \code{bpec.mcmc} run }

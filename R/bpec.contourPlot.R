@@ -1,4 +1,4 @@
-bpec.contourPlot <- function(bpecout, GoogleEarth = 0, colorCode = c(7,5,6,3,2,8,4,9,10), mapType = 'plain', mapCentre = NULL, zoom = 6) {
+bpec.contourPlot <- function(bpecout, GoogleEarth = 0, colorCode = c(7,5,6,3,2,8,4,9), mapType = 'plain', mapCentre = NULL, zoom = 6) {
     writeLines("Creating geographical contour plot...")
     
     if (mapType == 'none') {

@@ -275,6 +275,7 @@ bpec.mcmc <- function(rawSeqs, coordsLocs, maxMig, iter, ds, postSamples=0, dims
   bpecout$input$coordsLocsR = MCMCout$coordsLocsR
   colnames(bpecout$input$coordsLocsR) = 1:dim(bpecout$input$coordsLocsR)[2]
   colnames(bpecout$input$coordsLocsR)[1:MCMCout$coordsDimsR] = colnames(coordsLocsOrig)[1:MCMCout$coordsDimsR]
+ 
   bpecout$input$coordsDimsR = MCMCout$coordsDimsR
   bpecout$input$locNoR = MCMCout$locNoR
   bpecout$input$locDataR = MCMCout$locDataR
@@ -293,13 +294,15 @@ bpec.mcmc <- function(rawSeqs, coordsLocs, maxMig, iter, ds, postSamples=0, dims
   
   bpecout$clust = list()
   bpecout$clust$sampleMeansR = MCMCout$sampleMeansR
-  rownames(bpecout$clust$sampleMeansR) = names(coordsLocsOrig)[1:dim(bpecout$clust$sampleMeansR)[1]]
+ 
+  rownames(bpecout$clust$sampleMeansR) = colnames(coordsLocsOrig)[1:dim(bpecout$clust$sampleMeansR)[1]]
   rownames(bpecout$clust$sampleMeansR)[1:2] = c('lat','lon')
   bpecout$clust$sampleCovsR = MCMCout$sampleCovsR
-  dimnames(bpecout$clust$sampleCovsR)[[1]] = names(coordsLocsOrig)[1:dim(bpecout$clust$sampleCovsR)[1]]
+ 
+  dimnames(bpecout$clust$sampleCovsR)[[1]] = colnames(coordsLocsOrig)[1:dim(bpecout$clust$sampleCovsR)[1]]
   dimnames(bpecout$clust$sampleCovsR)[[1]][1:2] = c('lat','lon')
 
-  dimnames(bpecout$clust$sampleCovsR)[[2]] = names(coordsLocsOrig)[1:dim(bpecout$clust$sampleCovsR)[2]]
+  dimnames(bpecout$clust$sampleCovsR)[[2]] = colnames(coordsLocsOrig)[1:dim(bpecout$clust$sampleCovsR)[2]]
   dimnames(bpecout$clust$sampleCovsR)[[2]][1:2] = c('lat','lon')
   bpecout$clust$sampleIndicesR = MCMCout$sampleIndicesR
   bpecout$clust$clusterProbsR = MCMCout$clusterProbsR

@@ -1,4 +1,4 @@
-bpec.treePlot <- function(bpecout,colorCode=c(7,5,6,3,2,8,4,9,10)) {
+bpec.treePlot <- function(bpecout,colorCode=c(7,5,6,3,2,8,4,9)) {
   writeLines("Creating clustered tree plot...")
   count = bpecout$preproc$countR
   rootProbMean = (bpecout$tree$rootProbsR[1, ] + bpecout$tree$rootProbsR[2, ]) / 2

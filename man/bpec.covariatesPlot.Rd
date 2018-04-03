@@ -4,7 +4,7 @@
 \alias{bpec.covariatesPlot}
 \title{Plot posterior marginal distribution of each covariate for the inferred clusters}
 \description{For each covariate, the posterior marginal distribution for each cluster is shown, with colours representing cluster index. The posterior median as well as .10 and .90 quantiles are shown on the same plot in order to provide a measure of uncertainty.  }
-\usage{bpec.covariatesPlot(bpecout, colorCode=c(7,5,6,3,2,8,4,9,10))}
+\usage{bpec.covariatesPlot(bpecout, colorCode=c(7,5,6,3,2,8,4,9))}
 %- maybe also 'usage' for other objects documented here.
 \arguments{
    \item{bpecout}{\R object from \code{bpec.mcmc} run }
