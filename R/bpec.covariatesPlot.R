@@ -1,8 +1,8 @@
 bpec.covariatesPlot = function(bpecout, colorCode = c(7,5,6,3,2,8,4,9)) {
   writeLines("Creating covariate distribution plot...")
-  covNames = colnames(bpecout$input$coordsLocsR) 
-  meanSamples = bpecout$clust$sampleMeansR
-  covSamples = bpecout$clust$sampleCovsR 
+  covNames = colnames(bpecout$input$coordsLocs) 
+  meanSamples = bpecout$clust$sampleMeans
+  covSamples = bpecout$clust$sampleCovs
   noClusters=dim(meanSamples)[2]
   dims=dim(meanSamples)[1]
   subSeq=seq(1, length(covSamples[1, 1, 1, ]), length.out = 20)

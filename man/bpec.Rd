@@ -40,7 +40,7 @@ bpec(seqsFile, coordsFile, dims = 2, iter = 100000, postSamples = 100,
 \item{...}{Other default options.}
 }
 
-\value{ \code{bpec} object which can be analysed using \code{input()}, \code{data()}, \code{clust()}, \code{tree()} and \code{mcmc()}.}
+\value{ \code{bpec} object which can be analysed using \code{input()}, \code{data()}, \code{output.clust()}, \code{output.tree()} and \code{output.mcmc()}.}
 
 
 \details{

@@ -270,72 +270,72 @@ bpec.mcmc <- function(rawSeqs, coordsLocs, maxMig, iter, ds, postSamples=0, dims
   bpecout$input = list()
   bpecout$input$seqCountOrig = MCMCout$seqCountOrig
   bpecout$input$seqLengthOrig = MCMCout$seqLengthOrig
-  bpecout$input$iterR = MCMCout$iterR
-  bpecout$input$dsR = MCMCout$dsR
-  bpecout$input$coordsLocsR = MCMCout$coordsLocsR
-  colnames(bpecout$input$coordsLocsR) = 1:dim(bpecout$input$coordsLocsR)[2]
-  colnames(bpecout$input$coordsLocsR)[1:MCMCout$coordsDimsR] = colnames(coordsLocsOrig)[1:MCMCout$coordsDimsR]
+  bpecout$input$iter = MCMCout$iterR
+  bpecout$input$ds = MCMCout$dsR
+  bpecout$input$coordsLocs = MCMCout$coordsLocsR
+  colnames(bpecout$input$coordsLocs) = 1:dim(bpecout$input$coordsLocs)[2]
+  colnames(bpecout$input$coordsLocs)[1:MCMCout$coordsDimsR] = colnames(coordsLocsOrig)[1:MCMCout$coordsDimsR]
  
-  bpecout$input$coordsDimsR = MCMCout$coordsDimsR
-  bpecout$input$locNoR = MCMCout$locNoR
-  bpecout$input$locDataR = MCMCout$locDataR
-  bpecout$input$locDataR = bpecout$input$locDataR[as.logical(rowSums(bpecout$input$locDataR != 0)), ]
+  bpecout$input$coordsDims = MCMCout$coordsDimsR
+  bpecout$input$locNo = MCMCout$locNoR
+  bpecout$input$locData = MCMCout$locDataR
+  bpecout$input$locData = bpecout$input$locData[as.logical(rowSums(bpecout$input$locData != 0)), ]
   
   bpecout$preproc = list()
-  bpecout$preproc$seqR = MCMCout$seqR
+  bpecout$preproc$seq = MCMCout$seqR
  
-  bpecout$preproc$seqsFileR = MCMCout$seqsFileR
-  bpecout$preproc$seqLabelsR = MCMCout$seqLabelsR
-  bpecout$preproc$seqIndicesR = lapply(rawSeqs, function(elemnt) which(as.logical(lapply(unique(rawSeqs),function(uniquelement) all(uniquelement == elemnt)))))
-  bpecout$preproc$seqLengthR = MCMCout$seqLengthR
-  bpecout$preproc$noSamplesR = MCMCout$noSamplesR
-  bpecout$preproc$countR = MCMCout$countR
+  bpecout$preproc$seqsFile = MCMCout$seqsFileR
+  bpecout$preproc$seqLabels = MCMCout$seqLabelsR
+  bpecout$preproc$seqIndices = lapply(rawSeqs, function(elemnt) which(as.logical(lapply(unique(rawSeqs),function(uniquelement) all(uniquelement == elemnt)))))
+  bpecout$preproc$seqLength = MCMCout$seqLengthR
+  bpecout$preproc$noSamples = MCMCout$noSamplesR
+  bpecout$preproc$count = MCMCout$countR
   
   
   bpecout$clust = list()
-  bpecout$clust$sampleMeansR = MCMCout$sampleMeansR
+  bpecout$clust$sampleMeans = MCMCout$sampleMeansR
  
-  rownames(bpecout$clust$sampleMeansR) = colnames(coordsLocsOrig)[1:dim(bpecout$clust$sampleMeansR)[1]]
-  rownames(bpecout$clust$sampleMeansR)[1:2] = c('lat','lon')
-  bpecout$clust$sampleCovsR = MCMCout$sampleCovsR
+  rownames(bpecout$clust$sampleMeans) = colnames(coordsLocsOrig)[1:dim(bpecout$clust$sampleMeans)[1]]
+  rownames(bpecout$clust$sampleMeans)[1:2] = c('lat','lon')
+  bpecout$clust$sampleCovs = MCMCout$sampleCovsR
  
-  dimnames(bpecout$clust$sampleCovsR)[[1]] = colnames(coordsLocsOrig)[1:dim(bpecout$clust$sampleCovsR)[1]]
-  dimnames(bpecout$clust$sampleCovsR)[[1]][1:2] = c('lat','lon')
+  dimnames(bpecout$clust$sampleCovs)[[1]] = colnames(coordsLocsOrig)[1:dim(bpecout$clust$sampleCovs)[1]]
+  dimnames(bpecout$clust$sampleCovs)[[1]][1:2] = c('lat','lon')
 
-  dimnames(bpecout$clust$sampleCovsR)[[2]] = colnames(coordsLocsOrig)[1:dim(bpecout$clust$sampleCovsR)[2]]
-  dimnames(bpecout$clust$sampleCovsR)[[2]][1:2] = c('lat','lon')
-  bpecout$clust$sampleIndicesR = MCMCout$sampleIndicesR
-  bpecout$clust$clusterProbsR = MCMCout$clusterProbsR
+  dimnames(bpecout$clust$sampleCovs)[[2]] = colnames(coordsLocsOrig)[1:dim(bpecout$clust$sampleCovs)[2]]
+  dimnames(bpecout$clust$sampleCovs)[[2]][1:2] = c('lat','lon')
+  bpecout$clust$sampleIndices = MCMCout$sampleIndicesR
+  bpecout$clust$clusterProbs = MCMCout$clusterProbsR
   
   bpecout$tree = list()
-  bpecout$tree$cladoR = MCMCout$cladoR
-  templength = length(bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR])
-   bpecout$tree$levelsR = MCMCout$levelsR
-  names(bpecout$tree$levelsR)[1:templength] = bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR]
-  bpecout$tree$edgeTotalProbR = MCMCout$edgeTotalProbR
-  rownames(bpecout$tree$edgeTotalProbR) = 1:dim(bpecout$tree$edgeTotalProbR)[1]
-  colnames(bpecout$tree$edgeTotalProbR) = 1:dim(bpecout$tree$edgeTotalProbR)[2]
-  rownames(bpecout$tree$edgeTotalProbR)[1:templength] = bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR]
-  colnames(bpecout$tree$edgeTotalProbR)[1:templength] = bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR]
-  bpecout$tree$rootProbsR = t(array(MCMCout$rootProbsR[1:(2*bpecout$preproc$countR)], dim = c(bpecout$preproc$countR,2)))
+  bpecout$tree$clado = MCMCout$cladoR
+  templength = length(bpecout$preproc$seqsFile[bpecout$preproc$seqLabels])
+   bpecout$tree$levels = MCMCout$levelsR
+  names(bpecout$tree$levels)[1:templength] = bpecout$preproc$seqsFile[bpecout$preproc$seqLabels]
+  bpecout$tree$edgeTotalProb = MCMCout$edgeTotalProbR
+  rownames(bpecout$tree$edgeTotalProb) = 1:dim(bpecout$tree$edgeTotalProb)[1]
+  colnames(bpecout$tree$edgeTotalProb) = 1:dim(bpecout$tree$edgeTotalProb)[2]
+  rownames(bpecout$tree$edgeTotalProb)[1:templength] = bpecout$preproc$seqsFile[bpecout$preproc$seqLabels]
+  colnames(bpecout$tree$edgeTotalProb)[1:templength] = bpecout$preproc$seqsFile[bpecout$preproc$seqLabels]
+  bpecout$tree$rootProbs = t(array(MCMCout$rootProbsR[1:(2*bpecout$preproc$count)], dim = c(bpecout$preproc$count,2)))
   
-  bpecout$tree$rootProbsR[1, ] = bpecout$tree$rootProbsR[1, ] / sum(bpecout$tree$rootProbsR[1, ])
-  bpecout$tree$rootProbsR[2, ] = bpecout$tree$rootProbsR[2, ] / sum(bpecout$tree$rootProbsR[2, ])
+  bpecout$tree$rootProbs[1, ] = bpecout$tree$rootProbs[1, ] / sum(bpecout$tree$rootProbs[1, ])
+  bpecout$tree$rootProbs[2, ] = bpecout$tree$rootProbs[2, ] / sum(bpecout$tree$rootProbs[2, ])
   
-  colnames(bpecout$tree$rootProbsR) = 1:dim(bpecout$tree$rootProbsR)[2]
-  colnames(bpecout$tree$rootProbsR)[1:templength] = bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR]
+  colnames(bpecout$tree$rootProbs) = 1:dim(bpecout$tree$rootProbs)[2]
+  colnames(bpecout$tree$rootProbs)[1:templength] = bpecout$preproc$seqsFile[bpecout$preproc$seqLabels]
  
-  bpecout$tree$treeEdgesR = MCMCout$treeEdgesR
+  bpecout$tree$treeEdges = MCMCout$treeEdgesR
   
-  bpecout$tree$rootLocProbsR = MCMCout$rootLocProbsR
-  bpecout$tree$migProbsR = MCMCout$migProbsR
+  bpecout$tree$rootLocProbs = MCMCout$rootLocProbsR
+  bpecout$tree$migProbs = MCMCout$migProbsR
 
   bpecout$mcmc = list()
  
-  bpecout$mcmc$MCMCparamsR =MCMCout$MCMCparamsR
+  bpecout$mcmc$MCMCparams =MCMCout$MCMCparamsR
   bpecout$mcmc$codaInput = MCMCout$codaInput
  
-  bpecout$mcmc$errorCodeR = MCMCout$errorCodeR
+  bpecout$mcmc$errorCode = MCMCout$errorCodeR
      
   attr(bpecout, "class") <- "bpec"
   return(bpecout)

@@ -1,13 +1,13 @@
 bpec.treeEdges = function(MCMCout) {
    
-  count = MCMCout$countR
-  rootProbMean = MCMCout$rootProbsR[1:MCMCout$countR] + MCMCout$rootProbsR[(MCMCout$countR+1):(MCMCout$countR * 2)]
+  count = MCMCout$count
+  rootProbMean = MCMCout$rootProbs[1:MCMCout$count] + MCMCout$rootProbs[(MCMCout$count+1):(MCMCout$count * 2)]
   root = which.max(rootProbMean)
-  levels = MCMCout$levelsR
-  datSiz = MCMCout$noSamplesR
-  clado = MCMCout$cladoR
+  levels = MCMCout$levels
+  datSiz = MCMCout$noSamples
+  clado = MCMCout$clado
 
-  seqLabels = MCMCout$seqsFileR[MCMCout$seqLabelsR]
+  seqLabels = MCMCout$seqsFile[MCMCout$seqLabels]
  
   
  edgeList = NULL

@@ -16,13 +16,13 @@
  }
 
 \value{
-\item{seqR}{The output DNA sequences of distinct haplotypes, collapsed to effective nucleotide sites (both sampled and missing sequences which were inferred).}
-\item{seqsFileR}{A vector of the numerical labels of each haplotype.}
-\item{seqLabelsR}{Correspondence vector for each of the processed observations to the original haplotype labels. }
-\item{seqIndicesR}{Correspondence vector for each of the original observations to the resulting haplotype labels.}
-\item{seqLengthR}{The effective length of the input sequences, given by the number of variable nucleotide sites which are informative. In other words, if two different nucleotide sites are variable in exactly the same haplotypes, then they effectively provide information of a single site.}
-\item{noSamplesR}{The number of times each haplotype was observed in the sample. }
-\item{countR}{The number of output sequences.}
+\item{seq}{The output DNA sequences of distinct haplotypes, collapsed to effective nucleotide sites (both sampled and missing sequences which were inferred).}
+\item{seqsFile}{A vector of the numerical labels of each haplotype.}
+\item{seqLabels}{Correspondence vector for each of the processed observations to the original haplotype labels. }
+\item{seqIndices}{Correspondence vector for each of the original observations to the resulting haplotype labels.}
+\item{seqLength}{The effective length of the input sequences, given by the number of variable nucleotide sites which are informative. In other words, if two different nucleotide sites are variable in exactly the same haplotypes, then they effectively provide information of a single site.}
+\item{noSamples}{The number of times each haplotype was observed in the sample. }
+\item{count}{The number of output sequences.}
 }
 
 \author{Ioanna Manolopoulou & Axel Hille}

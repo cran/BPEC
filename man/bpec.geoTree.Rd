@@ -15,8 +15,8 @@
 \details{ Additionally to the output variables, a .kml file is created which can be loaded into GoogleEarth.  }
 
 \value{
-\item{phy}{Set of nodes and branches that can be loaded into \code{Phylo2GE()}}
-\item{geo}{Set of haplotypes and locations that can be loaded into \code{Phylo2GE()}}
+\item{phy}{Set of nodes and branches that can be loaded into \code{bpec.phylo2GE()}}
+\item{geo}{Set of haplotypes and locations that can be loaded into \code{bpec.phylo2GE()}}
 }
 
 \references{
@@ -27,6 +27,11 @@ G. Valiente (2009). \emph{Combinational Pattern Matching Algorithms in Computati
 N. Arrigo, L.P. Albert, P.G. Mickelson and M.S. Barker (2012). Quantitative visualization of biological data in Google Earth using R2G2, an R CRAN package. \emph{Molecular Ecology Resources}, 12(6), 1177-1179. 
 
 }
+
+\note{\code{bpec.phylo2GE} uses the function \code{curvy.R} from the archived package \code{R2G2} of Arrigo et al (2012). 
+}
+
+
 \author{Axel Hille}
 \examples{
 \dontrun{

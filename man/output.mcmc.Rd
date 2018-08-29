@@ -1,25 +1,22 @@
-\name{clust}
+\name{output.mcmc}
 \encoding{ISO-8859-1}
 \Rdversion{1.1}
-\alias{clust.bpec}
-\alias{clust}
+\alias{output.mcmc.bpec}
+\alias{output.mcmc}
 \title{Load location data}
-\description{Posterior output for the clustering parameters. }
-\usage{clust(bpecout)
+\description{Provides various MCMC tuning parameters, as well as posterior samples for convergence assessment. }
+\usage{output.mcmc(bpecout)
 
-\method{clust}{bpec}(bpecout)
+\method{output.mcmc}{bpec}(bpecout)
 }
 
 \arguments{
-\item{bpecout}{\R object from \code{bpec.mcmc} run}
-		  
+\item{bpecout}{\R object from \code{bpec.mcmc} run}		  
  }
 
 \value{
-\item{sampleMeansR}{A set of posterior samples of the cluster means (i.e. centres).}
-\item{sampleCovsR}{A set of posterior samples of the cluster covariances (i.e. shapes).}
-\item{sampleIndicesR}{A set of posterior samples of the cluster allocations of each observation.} 
-\item{clusterProbsR}{For each haplotype, posterior probabilities that it belongs to each cluster.}
+\item{MCMCparams}{Various MCMC tuning parameters, useful for development. }
+\item{codaInput}{Posterior samples from the two MCMC chains for the cluster means, cluster covariance entries, as well as the root haplotype. Note that, since the number of clusters varies from iteration to iteration, some samples are simply draws from the prior (corresponding to empty clusters). This variable can be loaded directly into the \code{coda} package for convergence analysis.  } 
 }
 
 \author{Ioanna Manolopoulou & Axel Hille}
@@ -39,7 +36,7 @@ postSamples <- 100 #you will need at least 100 saved posterior samples
 
 #run the Markov chain Monte Carlo sampler
 bpecout <- bpec.mcmc(rawSeqs,coordsLocs,maxMig,iter,ds,postSamples,dims)
-clust(bpecout)
+output.mcmc(bpecout)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

@@ -18,6 +18,27 @@
 # coordsLocsFile to input "geo" for final use in the package "R2G2";
 # KML produced using the Phylo2GE function.
 
+curvy <-
+function(f, startDD, stopDD){  
+  radian = 180 / pi
+
+  lat1 = startDD[2] / radian
+  lon1 = startDD[1] / radian 
+  lat2 = stopDD[2] / radian
+  lon2 = stopDD[1] / radian
+
+  d = acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon1-lon2))
+  A = sin((1 - f) * d) / sin(d)
+  B = sin(f * d) / sin(d)
+  x = as.numeric(A * cos(lat1) * cos(lon1) +  B * cos(lat2) * cos(lon2))
+  y = as.numeric(A * cos(lat1) * sin(lon1) +  B * cos(lat2) * sin(lon2))
+  z = as.numeric(A * sin(lat1) +  B * sin(lat2))
+  lat=atan2(z, sqrt(x^2 + y^2))
+  lon=atan2(y, x)
+  rev(c(lat * 180/pi, lon * 180/pi))
+  }
+
+
 mynei <- function(net,v,mode){
   if(mode=="out"){
     output = setdiff(unlist(neighborhood(net, 1, nodes=v, mode="out")), v)
@@ -190,10 +211,10 @@ bpec.geoTree <- function(bpecout, file="GoogleEarthTree.kml") {
     Output = list()
     writeLines("Creating GoogleEarth Tree plot...")
     treeEdges = bpecout$tree$treeEdges
-    clustprob = bpecout$clust$clusterProbsR
-    count = bpecout$preproc$countR
-    coordsLocs = bpecout$input$coordsLocsR
-    dims = dim(bpecout$clust$sampleMeansR)[1]
+    clustprob = bpecout$clust$clusterProbs
+    count = bpecout$preproc$count
+    coordsLocs = bpecout$input$coordsLocs
+    dims = dim(bpecout$clust$sampleMeans)[1]
 ####################################################################
                                         # required libraries igraph, R2G2, ape
 ####################################################################
@@ -254,7 +275,7 @@ bpec.geoTree <- function(bpecout, file="GoogleEarthTree.kml") {
         {
             coordsLocs = cbind(coordsLocs, seq(1, nrow(coordsLocs)))
         }
-    coordsLocsSingle = array(0,dim = c(sum(bpecout$preproc$noSamplesR), 3))
+    coordsLocsSingle = array(0,dim = c(sum(bpecout$preproc$noSamples), 3))
     counter = 1
     for(i in 1:nrow(coordsLocs))
         {

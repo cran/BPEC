@@ -17,7 +17,7 @@
     
                                         # now also plot the environmental covariates
     par(mfrow = c(2, 3)) #split the plot window into 2x3 to fit all the covariates
-    if (x$input$coordsDimsR > 2) {
+    if (x$input$coordsDims > 2) {
         bpec.covariatesPlot(x, colorCode = colorCode) 
     }
     if (GoogleEarth == 1) {
@@ -29,21 +29,21 @@
   cat(paste('bpec ran with the following settings:\n'))
   cat(paste('Number of input sequences',object$input$seqCountOrig,'\n'))
   cat(paste('Input sequence length',object$input$seqLengthOrig,'\n'))
-  cat(paste('Number of iterations',object$input$iterR,'\n'))
-  cat(paste('Number of saved iterations',dim(object$clust$sampleMeansR)[3]/2,'\n'))
+  cat(paste('Number of iterations',object$input$iter,'\n'))
+  cat(paste('Number of saved iterations',dim(object$clust$sampleMeans)[3]/2,'\n'))
   
-  cat(paste('Dimensions',object$input$coordsDimsR,'\n'))
-  cat(paste('Parsimony relaxation',object$input$dsR,'\n'))
-  cat(paste('Maximum number of migrations',length(object$tree$migProbsR) - 1,'\n'))
+  cat(paste('Dimensions',object$input$coordsDims,'\n'))
+  cat(paste('Parsimony relaxation',object$input$ds,'\n'))
+  cat(paste('Maximum number of migrations',length(object$tree$migProbs) - 1,'\n'))
   
   cat(paste('\nThe results of bpec are: \n'))
-  cat(paste('Number of haplotypes (including missing)',dim(object$preproc$seqR)[1],'\n'))
-  cat(paste('of which',dim(object$preproc$seqR)[1]-object$input$seqCountOrig,'are missing\n'))
-  cat(paste('Effective sequence length',object$preproc$seqLengthR,'\n'))
-  cat(paste('The most likely number of migrations is',which.max(object$tree$migProbsR)))
-  seqLabels = object$preproc$seqsFileR[object$preproc$seqLabelsR]
-  maxMig = length(object$tree$migProbsR) - 1
-  rootProbMean = (object$tree$rootProbsR[1, ] + object$tree$rootProbsR[2, ]) / 2
+  cat(paste('Number of haplotypes (including missing)',dim(object$preproc$seq)[1],'\n'))
+  cat(paste('of which',dim(object$preproc$seq)[1]-object$input$seqCountOrig,'are missing\n'))
+  cat(paste('Effective sequence length',object$preproc$seqLength,'\n'))
+  cat(paste('The most likely number of migrations is',which.max(object$tree$migProbs)))
+  seqLabels = object$preproc$seqsFile[object$preproc$seqLabels]
+  maxMig = length(object$tree$migProbs) - 1
+  rootProbMean = (object$tree$rootProbs[1, ] + object$tree$rootProbs[2, ]) / 2
  
   if (which.max(rootProbMean) <= length(seqLabels)) {
     root = seqLabels[which.max(rootProbMean)]
@@ -54,17 +54,17 @@
     writeLines(paste("\nThe most likely root node is extinct", sep=""))
   }
   maxVar = 0
-  chainMeans = array(0, dim = c(dim(object$clust$sampleMeansR)[1], dim(object$clust$sampleMeansR)[2], 2))
+  chainMeans = array(0, dim = c(dim(object$clust$sampleMeans)[1], dim(object$clust$sampleMeans)[2], 2))
   flag = 0
-  postSamples = length(object$clust$sampleMeansR[1, 1, ]) / 2
+  postSamples = length(object$clust$sampleMeans[1, 1, ]) / 2
   
   for(i in 1:(maxMig+1)) {
-    for(j in 1:object$input$coordsDimsR) {
+    for(j in 1:object$input$coordsDims) {
       for(l in 1:2) {
-        chainMeans[j, i, l] = mean(object$clust$sampleMeansR[j, i, (1 + (l-1) * postSamples):(l * postSamples)], na.rm = TRUE)
+        chainMeans[j, i, l] = mean(object$clust$sampleMeans[j, i, (1 + (l-1) * postSamples):(l * postSamples)], na.rm = TRUE)
       }
       if (sum(is.na(chainMeans[j, i, ])) == 0) {
-        if (abs(chainMeans[j, i, 1] - chainMeans[j, i, 2]) > 0.05 * (max(object$input$coordsLocsR[, j]) - min(object$input$coordsLocsR[, j])) && mean(is.na(object$clust$sampleMeansR[j, i, ])) < 0.5) {
+        if (abs(chainMeans[j, i, 1] - chainMeans[j, i, 2]) > 0.05 * (max(object$input$coordsLocs[, j]) - min(object$input$coordsLocs[, j])) && mean(is.na(object$clust$sampleMeans[j, i, ])) < 0.5) {
         writeLines("NO CLUSTER CONVERGENCE: You need to re-run the sampler with more iterations")
           flag = 1
           break
@@ -76,10 +76,10 @@
     }        
   }
   
-  rootProbs1 = object$tree$rootProbsR[1:object$preproc$countR]
-  rootProbs2 = object$tree$rootProbsR[(object$preproc$countR + 1):(object$preproc$countR * 2)]
+  rootProbs1 = object$tree$rootProbs[1:object$preproc$count]
+  rootProbs2 = object$tree$rootProbs[(object$preproc$count + 1):(object$preproc$count * 2)]
   
-  if (max(abs(rootProbs1 / sum(rootProbs1) - rootProbs2 / sum(rootProbs2))) > 0.5 / object$preproc$countR) {
+  if (max(abs(rootProbs1 / sum(rootProbs1) - rootProbs2 / sum(rootProbs2))) > 0.5 / object$preproc$count) {
     writeLines("NO ROOT CONVERGENCE: You need to re-run the sampler with more iterations");
   }   
 }
@@ -87,13 +87,13 @@
 
 `print.bpec` <- function(x,...) {  
   cat(paste('\nThe results of bpec are: \n'))
-  cat(paste('Number of haplotypes (including missing)',dim(x$preproc$seqR)[1],'\n'))
-  cat(paste('of which',dim(x$preproc$seqR)[1]-x$input$seqCountOrig,'are missing\n'))
-  cat(paste('Effective sequence length',x$preproc$seqLengthR,'\n'))
-  cat(paste('The most likely number of migrations is',which.max(x$tree$migProbsR)))
-  seqLabels = x$preproc$seqsFileR[x$preproc$seqLabelsR]
-  maxMig = length(x$tree$migProbsR) - 1
-  rootProbMean = (x$tree$rootProbsR[1, ] + x$tree$rootProbsR[2, ]) / 2
+  cat(paste('Number of haplotypes (including missing)',dim(x$preproc$seq)[1],'\n'))
+  cat(paste('of which',dim(x$preproc$seq)[1]-x$input$seqCountOrig,'are missing\n'))
+  cat(paste('Effective sequence length',x$preproc$seqLength,'\n'))
+  cat(paste('The most likely number of migrations is',which.max(x$tree$migProbs)))
+  seqLabels = x$preproc$seqsFile[x$preproc$seqLabels]
+  maxMig = length(x$tree$migProbs) - 1
+  rootProbMean = (x$tree$rootProbs[1, ] + x$tree$rootProbs[2, ]) / 2
 
   if (which.max(rootProbMean) <= length(seqLabels)) {
     root = seqLabels[which.max(rootProbMean)]
@@ -104,17 +104,17 @@
     writeLines(paste("\nThe most likely root node is extinct", sep=""))
   }
   maxVar = 0
-  chainMeans = array(0, dim = c(dim(x$clust$sampleMeansR)[1], dim(x$clust$sampleMeansR)[2], 2))
+  chainMeans = array(0, dim = c(dim(x$clust$sampleMeans)[1], dim(x$clust$sampleMeans)[2], 2))
   flag = 0
-  postSamples = length(x$clust$sampleMeansR[1, 1, ]) / 2
+  postSamples = length(x$clust$sampleMeans[1, 1, ]) / 2
   
   for(i in 1:(maxMig+1)) {
-    for(j in 1:x$input$coordsDimsR) {
+    for(j in 1:x$input$coordsDims) {
       for(l in 1:2) {
-        chainMeans[j, i, l] = mean(x$clust$sampleMeansR[j, i, (1 + (l-1) * postSamples):(l * postSamples)], na.rm = TRUE)
+        chainMeans[j, i, l] = mean(x$clust$sampleMeans[j, i, (1 + (l-1) * postSamples):(l * postSamples)], na.rm = TRUE)
       }
       if (sum(is.na(chainMeans[j, i, ])) == 0) {
-       if (abs(chainMeans[j, i, 1] - chainMeans[j, i, 2]) > 0.05 * (max(x$input$coordsLocsR[, j]) - min(x$input$coordsLocsR[, j])) && mean(is.na(x$clust$sampleMeansR[j, i, ])) < 0.5) {
+       if (abs(chainMeans[j, i, 1] - chainMeans[j, i, 2]) > 0.05 * (max(x$input$coordsLocs[, j]) - min(x$input$coordsLocs[, j])) && mean(is.na(x$clust$sampleMeans[j, i, ])) < 0.5) {
          writeLines("NO CLUSTER CONVERGENCE: You need to re-run the sampler with more iterations")
           flag = 1
           break
@@ -126,20 +126,20 @@
     }        
   }
   
-  rootProbs1 = x$tree$rootProbsR[1:x$preproc$countR]
-  rootProbs2 = x$tree$rootProbsR[(x$preproc$countR + 1):(x$preproc$countR * 2)]
+  rootProbs1 = x$tree$rootProbs[1:x$preproc$count]
+  rootProbs2 = x$tree$rootProbs[(x$preproc$count + 1):(x$preproc$count * 2)]
   
-  if (max(abs(rootProbs1 / sum(rootProbs1) - rootProbs2 / sum(rootProbs2))) > 0.5 / x$preproc$countR) {
+  if (max(abs(rootProbs1 / sum(rootProbs1) - rootProbs2 / sum(rootProbs2))) > 0.5 / x$preproc$count) {
     writeLines("NO ROOT CONVERGENCE: You need to re-run the sampler with more iterations");
   }   
 }
 
 `mean.bpec` <- function(x, ...) {
     cat('The mean cluster centres are:\n')
-    print(apply(x$clust$sampleMeansR, c(1,2), 'mean', na.rm = TRUE))
+    print(apply(x$clust$sampleMeans, c(1,2), 'mean', na.rm = TRUE))
 
     cat('The mean cluster covariances are:\n')
-    print(apply(x$clust$sampleCovsR, c(1,2,3), 'mean', na.rm = TRUE))
+    print(apply(x$clust$sampleCovs, c(1,2,3), 'mean', na.rm = TRUE))
 
     cat('The mean root posterior probabilities are:\n')
     print(apply(x$tree$rootProbs, 2, 'mean',  na.rm = TRUE))
@@ -151,12 +151,12 @@ input <- function(bpecout) UseMethod("input")
     output = list()
     output$seqCountOrig = bpecout$input$seqCountOrig
     output$seqLengthOrig = bpecout$input$seqLengthOrig
-    output$iterR = bpecout$input$iterR
-    output$dsR = bpecout$input$dsR
-    output$coordsLocsR = bpecout$input$coordsLocsR
-    output$coordsDimsR = bpecout$input$coordsDimsR
-    output$locNoR = bpecout$input$locNoR
-    output$locDataR = bpecout$input$locDataR
+    output$iter = bpecout$input$iter
+    output$ds = bpecout$input$ds
+    output$coordsLocs = bpecout$input$coordsLocs
+    output$coordsDims = bpecout$input$coordsDims
+    output$locNo = bpecout$input$locNo
+    output$locData = bpecout$input$locData
  
  return(output)
 }
@@ -164,41 +164,41 @@ input <- function(bpecout) UseMethod("input")
 preproc <- function(bpecout) UseMethod("preproc")
 `preproc.bpec` <- function(bpecout){
     output = list()
-    output$seqR = bpecout$preproc$seqR
-    output$seqsFileR = bpecout$preproc$seqsFileR
-    output$seqLabelsR = bpecout$preproc$seqLabelsR
-    output$seqIndicesR = bpecout$preproc$seqIndicesR
-    output$seqLengthR = bpecout$preproc$seqLengthR
-    output$noSamplesR = bpecout$preproc$noSamplesR
-    output$countR = bpecout$preproc$countR
+    output$seq = bpecout$preproc$seq
+    output$seqsFile = bpecout$preproc$seqsFile
+    output$seqLabels = bpecout$preproc$seqLabels
+    output$seqIndices = bpecout$preproc$seqIndices
+    output$seqLength = bpecout$preproc$seqLength
+    output$noSamples = bpecout$preproc$noSamples
+    output$count = bpecout$preproc$count
 
     return(output)
 }
 
-setGeneric("tree", function(bpecout) standardGeneric("tree"))
-tree <- function(bpecout) UseMethod("tree")
+#setGeneric("tree", function(bpecout) standardGeneric("tree"))
+output.tree <- function(bpecout) UseMethod("output.tree")
 
-`tree.bpec` <- function(bpecout){
+`output.tree.bpec` <- function(bpecout){
     output = list()
-    output$cladoR = bpecout$tree$cladoR
-    output$levelsR = bpecout$tree$levelsR
-    output$edgeTotalProbR = bpecout$tree$edgeTotalProbR
-    output$rootProbsR = bpecout$tree$rootProbsR
+    output$clado = bpecout$tree$clado
+    output$levels = bpecout$tree$levels
+    output$edgeTotalProb = bpecout$tree$edgeTotalProb
+    output$rootProbs = bpecout$tree$rootProbs
     output$treeEdges = bpecout$tree$treeEdges
-    output$rootLocProbsR = bpecout$tree$rootLocProbsR
-    output$migProbsR = bpecout$tree$migProbsR
+    output$rootLocProbs = bpecout$tree$rootLocProbs
+    output$migProbs = bpecout$tree$migProbs
     
     return(output)
 }
 
-clust <- function(bpecout) UseMethod("clust")
+output.clust <- function(bpecout) UseMethod("output.clust")
 
-`clust.bpec` <- function(bpecout){
+`output.clust.bpec` <- function(bpecout){
     output = list()
-    output$sampleMeansR = bpecout$clust$sampleMeansR
-    output$sampleCovsR = bpecout$clust$sampleCovsR
-    output$sampleIndicesR = bpecout$clust$sampleIndicesR
-    output$clusterProbsR = bpecout$clust$clusterProbsR
+    output$sampleMeans = bpecout$clust$sampleMeans
+    output$sampleCovs = bpecout$clust$sampleCovs
+    output$sampleIndices = bpecout$clust$sampleIndices
+    output$clusterProbs = bpecout$clust$clusterProbs
   
     return(output)
 }
@@ -208,8 +208,8 @@ clust <- function(bpecout) UseMethod("clust")
 #setMethod("mcmc", "bpec",
 #function(x, ...) {
 #  output = list()
-#    output$MCMCparamsR = bpecout$mcmc$MCMCparamsR
-#    output$MCChainMeansR = bpecout$mcmc$MCChainMeansR
+#    output$MCMCparams = bpecout$mcmc$MCMCparams
+#    output$MCChainMeans = bpecout$mcmc$MCChainMeans
 #   output$codaInput = bpecout$mcmc$codaInput 
 #    
 #    return(output)
@@ -222,18 +222,19 @@ clust <- function(bpecout) UseMethod("clust")
 #  }
 #)
 
-setGeneric("mcmc", function(x) standardGeneric("mcmc"))
-mcmc <- function(bpecout) UseMethod("mcmc")
+#setGeneric("mcmc", function(x) standardGeneric("mcmc"))
 
-`mcmc.bpec` <- function(bpecout){
+output.mcmc <- function(bpecout) UseMethod("output.mcmc")
+
+`output.mcmc.bpec` <- function(bpecout){
     output = list()
-    output$MCMCparamsR = bpecout$mcmc$MCMCparamsR
-    output$MCChainMeansR = bpecout$mcmc$MCChainMeansR
+    output$MCMCparams = bpecout$mcmc$MCMCparams
+    output$MCChainMeans = bpecout$mcmc$MCChainMeans
     output$codaInput = bpecout$mcmc$codaInput 
     
     return(output)
 }
 
-`mcmc.list` <- function(bpecout){
-    return(coda::mcmc(bpecout))
-}
+#`mcmc.list` <- function(bpecout){
+#    return(coda::mcmc(bpecout))
+#}

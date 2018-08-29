@@ -38,7 +38,7 @@ The space of possible clusterings is vast and highly multi-modal. The migration 
    so, in the first location (lat/long 36.88, -5.42) you have 2 sampled individuals with   haplotypes 24,25, in the second location  eight individuals etc. Sequences don't necessarily need to be collapsed onto haplotypes, the program should take  care of it.
 
 }
-\value{\code{bpec} object which can be analysed and summarised using the accessor functions \code{input()}, \code{dataSummary()}, \code{clust()}, \code{tree()}, \code{mcmc()}.}
+\value{\code{bpec} object which can be analysed and summarised using the accessor functions \code{input()}, \code{preproc()}, \code{output.clust()}, \code{output.tree()}, \code{output.mcmc()}.}
 
 \note{\code{bpec.mcmc} uses  \code{cexcept.h 2.0.1} (an interface for exception-handling in ANSI C) developed by Adam M. Costello and Cosmin Truta.
 }

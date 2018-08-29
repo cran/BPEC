@@ -1,16 +1,16 @@
 bpec.treePlot <- function(bpecout,colorCode=c(7,5,6,3,2,8,4,9)) {
   writeLines("Creating clustered tree plot...")
-  count = bpecout$preproc$countR
-  rootProbMean = (bpecout$tree$rootProbsR[1, ] + bpecout$tree$rootProbsR[2, ]) / 2
+  count = bpecout$preproc$count
+  rootProbMean = (bpecout$tree$rootProbs[1, ] + bpecout$tree$rootProbs[2, ]) / 2
   
     
   root = which.max(rootProbMean)
   
-  levels = bpecout$tree$levelsR
-  datSiz = bpecout$preproc$noSamplesR
-  clado = bpecout$tree$cladoR
-  clusterProbs = bpecout$clust$clusterProbsR
-  seqLabels = bpecout$preproc$seqsFileR[bpecout$preproc$seqLabelsR]
+  levels = bpecout$tree$levels
+  datSiz = bpecout$preproc$noSamples
+  clado = bpecout$tree$clado
+  clusterProbs = bpecout$clust$clusterProbs
+  seqLabels = bpecout$preproc$seqsFile[bpecout$preproc$seqLabels]
 
   if (length(seqLabels) < count) {
      seqLabels = c(seqLabels, rep(0, count - length(seqLabels)))
@@ -69,7 +69,7 @@ bpec.treePlot <- function(bpecout,colorCode=c(7,5,6,3,2,8,4,9)) {
                           nodeCoords[(l-1) * 2 + 1] = nodeCoords[(nodeOrder[j] - 1) * 2 + 1]
                         }
 
-                      thickness = bpecout$tree$edgeTotalProbR[nodeOrder[j], l] * 1.5
+                      thickness = bpecout$tree$edgeTotalProb[nodeOrder[j], l] * 1.5
                       lines(c(nodeCoords[(l-1) * 2 + 1], nodeCoords[(nodeOrder[j] - 1) * 2 + 1]), c(nodeCoords[(l-1) * 2 + 2], nodeCoords[(nodeOrder[j] - 1) * 2 + 2]), lwd = thickness)
                     
                       previousOne = l
@@ -109,9 +109,9 @@ bpec.treePlot <- function(bpecout,colorCode=c(7,5,6,3,2,8,4,9)) {
   output = list()
 #  writeLines("Creating GoogleEarth Tree plot...")
   treeEdges = bpecout$tree$treeEdges
-  clustProb = bpecout$clust$clusterProbsR
-  count = bpecout$preproc$countR
-  dims = dim(bpecout$clust$sampleMeansR)[1]
+  clustProb = bpecout$clust$clusterProbs
+  count = bpecout$preproc$count
+  dims = dim(bpecout$clust$sampleMeans)[1]
 ####################################################################
                                         # required libraries igraph, R2G2, ape
 ####################################################################

@@ -37,8 +37,8 @@ bpec.contourPlot <- function(bpecout, GoogleEarth = 0, colorCode = c(7,5,6,3,2,8
     NCP = 15
     NCPR = 2 * NCP + 1
     
-    meanSamples = bpecout$clust$sampleMeansR
-    covSamples = bpecout$clust$sampleCovsR
+    meanSamples = bpecout$clust$sampleMeans
+    covSamples = bpecout$clust$sampleCovs
     noClusters=dim(meanSamples)[2]
     fullMeanSamples = meanSamples
     fullCovSamples = covSamples

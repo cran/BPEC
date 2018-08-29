@@ -8,9 +8,9 @@ export(bpec.contourPlot,
 	bpec.treePlot,
 	input,
 	preproc,
-	tree,
-	clust,	
-	mcmc,	
+	output.tree,
+	output.clust,	
+	output.mcmc,	
 	bpec,		
 	bpec.loadCoords,
 	bpec.loadSeq)
@@ -25,7 +25,6 @@ import( mvtnorm,
 	)
 
 importFrom("fields", "world")
-importFrom(R2G2, curvy) 
 importFrom(phytools,read.newick)
 importFrom(ape,collapse.singles)
 importFrom(ape,compute.brlen)
@@ -49,9 +48,8 @@ S3method(summary,bpec)
 S3method(mean,bpec)
 S3method(input,bpec)
 S3method(preproc,bpec)
-S3method(clust,bpec)
-S3method(tree,bpec)
-S3method(mcmc,bpec)
-S3method(mcmc,list)
+S3method(output.clust,bpec)
+S3method(output.tree,bpec)
+S3method(output.mcmc,bpec)
 
 useDynLib(BPEC, .registration = TRUE)

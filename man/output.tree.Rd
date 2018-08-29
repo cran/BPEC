@@ -1,13 +1,13 @@
-\name{tree}
+\name{output.tree}
 \encoding{ISO-8859-1}
 \Rdversion{1.1}
-\alias{tree.bpec}
-\alias{tree}
+\alias{output.tree.bpec}
+\alias{output.tree}
 \title{Load location data}
 \description{Posterior output for the tree model. }
 \usage{
-tree(bpecout)
-\method{tree}{bpec}(bpecout)
+output.tree(bpecout)
+\method{output.tree}{bpec}(bpecout)
 }
 
 \arguments{
@@ -15,13 +15,13 @@ tree(bpecout)
  }
 
 \value{
-\item{cladoR}{The MAP adjacency matrix for the tree in vectorised format: this means that for two haplotypes i,j, the (i,j)th entry of the matrix is 1 if the haplotypes are connected in the network and 0 otherwise.}
-\item{levelsR}{Starting from the root (level 0) all the way to the tips, the discrete depth for the Maximum A Posteriori tree plot.}
-\item{edgeTotalProbR}{Posterior probabilities of each edge being present, i.e. corresponding to a mutation which occurred.}
-\item{rootProbsR}{The posterior probability per chain that each haplotype was the root of the tree.}
-\item{treeEdgesR}{The set of edges (from and to haplotypes) of the Maximum A Posteriori haplotype tree (could be used in another program if needed).}
-\item{rootLocProbsR}{Vector of posterior probabilities of each sampling location being the ancestral location.}
-\item{migProbsR}{The posterior probability of 0...maxMig migrations.}
+\item{clado}{The MAP adjacency matrix for the tree in vectorised format: this means that for two haplotypes i,j, the (i,j)th entry of the matrix is 1 if the haplotypes are connected in the network and 0 otherwise.}
+\item{levels}{Starting from the root (level 0) all the way to the tips, the discrete depth for the Maximum A Posteriori tree plot.}
+\item{edgeTotalProb}{Posterior probabilities of each edge being present, i.e. corresponding to a mutation which occurred.}
+\item{rootProbs}{The posterior probability per chain that each haplotype was the root of the tree.}
+\item{treeEdges}{The set of edges (from and to haplotypes) of the Maximum A Posteriori haplotype tree (could be used in another program if needed).}
+\item{rootLocProbs}{Vector of posterior probabilities of each sampling location being the ancestral location.}
+\item{migProbs}{The posterior probability of 0...maxMig migrations.}
 }
 
 \author{Ioanna Manolopoulou & Axel Hille}
@@ -41,7 +41,7 @@ postSamples <- 100 #you will need at least 100 saved posterior samples
 
 #run the Markov chain Monte Carlo sampler
 bpecout <- bpec.mcmc(rawSeqs,coordsLocs,maxMig,iter,ds,postSamples,dims)
-tree(bpecout)
+output.tree(bpecout)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

@@ -17,12 +17,12 @@
 \value{
 \item{seqCountOrig}{The number of input sequences.}
 \item{seqLengthOrig}{The length of the input sequences.} 
-\item{iterR}{The number of MCMC iterations. }
-\item{dsR}{The parsimony relaxation parameter.} 
-\item{coordsLocsR}{The input coordinate and observation file. }
-\item{coordsDimsR}{The input dimension (2 for purely geographical data).}
-\item{locNoR}{The number of distinct sampling locations. }
-\item{locDataR}{The list of coordinates of each observation.}  
+\item{iter}{The number of MCMC iterations. }
+\item{ds}{The parsimony relaxation parameter.} 
+\item{coordsLocs}{The input coordinate and observation file. }
+\item{coordsDims}{The input dimension (2 for purely geographical data).}
+\item{locNo}{The number of distinct sampling locations. }
+\item{locData}{The list of coordinates of each observation.}  
 }
 
 \author{Ioanna Manolopoulou & Axel Hille}
