@@ -4,7 +4,7 @@
 #include <time.h>
 #include <string.h>  
 #include <unistd.h>
-#include "cexcept.h"
+
 #include "loopfunctions.h"
 #include "randomnumbers.h"
 

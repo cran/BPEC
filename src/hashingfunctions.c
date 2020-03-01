@@ -5,16 +5,12 @@
 #include <time.h>
 #include <string.h>  
 #include <unistd.h>
-#include "cexcept.h"
+//#include "cexcept.h"
 
 #include <R.h>
 #include <Rmath.h>
-//#include <Rinternals.h> 
-//#include <R_ext/Utils.h>  
 
-define_exception_type(int);
-extern struct exception_context the_exception_context[1];
-struct exception_context the_exception_context[1];
+
 
 void multiplyDD(long int *AA,int BB,int dimdim,int maxcap)
 {
@@ -235,7 +231,7 @@ int hashing(int NN,long int *nx,long int **nvec,int JSTART,int Ldep,int dimdim,i
 {
   //i think the point here is that we have a vector nx and we produce from it a matrix nvec
 
-  int NINCR,i,j,LOC,k,flag;
+  int NINCR,i,j,LOC,k,flag,errorflag=0;
   long int II[dimdim];
   //here L is the order of dependence!!!! ????
   if(JSTART<Ldep)
@@ -314,12 +310,20 @@ int hashing(int NN,long int *nx,long int **nvec,int JSTART,int Ldep,int dimdim,i
 	  }
 	if(k>nmaxx)
 	  {
-	    Throw 42;
+	    errorflag = 1;
+	    Rprintf("Error in the hashing function, too many loops");
+	    break;
+	    //	    Throw 42;
 	    //	    Rprintf("try %d k %d\n",LOC,k);
 	  }
 	LOC=(LOC+NINCR)%(int)nmaxx;
 
       }while((int)0==(int)0);
+
+      if(errorflag == 1)
+	{
+	  return -1;
+	}
     }
 
   return 0;

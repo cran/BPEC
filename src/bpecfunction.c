@@ -4,7 +4,7 @@
 #include <time.h>
 #include <string.h>  
 #include <unistd.h>
-#include "cexcept.h"
+//#include "cexcept.h"
 #include "randomnumbers.h"
 #include "matrices.h"
 #include "hashingfunctions.h"
@@ -34,10 +34,16 @@
 #define Pi 3.14159265358979323846
 #define nloop 1000 // no. of extra nodes we add, not easy 2 know b4hand.can find out b4 MCMC and adjust it not to waste time. 
 
+
+//define_exception_type(int);
+//extern struct exception_context the_exception_context[1];
+//struct exception_context the_exception_context[1];
+
+
 int maxMig,samsize,length,dim,mprior,ModPower;
 
 char **TT,**t,**TTemp; 
-int *maxGroup,**maxIndic,*level,*group,*clado,*size,*Size,*datsiz,*e,*central,*Central,**centrall,**Centrall,*ce,*Ce,count,q,**path,initial,*tempclado,*loopy,flag,*flagpoint,simonflag,templ,*templpoint,loopno=0,minloop,*minlooppoint,**tempath,*sorted,*don,*ddon,root[2],*mutnpos,*Mutnpos,*deletedge,*Deletedge,**edge,**Edge,*Group,*ffnew,*fffnew,tempvar=0,tempvardeleted,var1,var2,acceptroot,acceptprobs,**indic,**Indic,countinit,groupedgeno=0,Groupedgeno,groupnodeno=0,totalgroupedgeno=0,bull=0,edgetotal,*treecombination,**mutorder,**Mutorder,*various,*temppvarious,*other,*identi,*distance,*seqsFile,*snp,*snpposition,countsnp,*done,maxmig[2],edgeprop8upto,**datsizorder,**Datsizorder,**peripherorder,**Peripherorder,*fffneworder,*Fffneworder,removedcentral,removedhaplo,**sizeRJ,**historyorder,**Historyorder,totalcount;
+int *maxGroup,**maxIndic,*level,*group,*clado,*size,*Size,*datsiz,*e,*central,*Central,**centrall,**Centrall,*ce,*Ce,count,q,**path,initial,*tempclado,*loopy,flag,errorflag,*flagpoint,simonflag,templ,*templpoint,loopno=0,minloop,*minlooppoint,**tempath,*sorted,*don,*ddon,root[2],*mutnpos,*Mutnpos,*deletedge,*Deletedge,**edge,**Edge,*Group,*ffnew,*fffnew,tempvar=0,tempvardeleted,var1,var2,acceptroot,acceptprobs,**indic,**Indic,countinit,groupedgeno=0,Groupedgeno,groupnodeno=0,totalgroupedgeno=0,bull=0,edgetotal,*treecombination,**mutorder,**Mutorder,*various,*temppvarious,*other,*identi,*distance,*seqsFile,*snp,*snpposition,countsnp,*done,maxmig[2],edgeprop8upto,**datsizorder,**Datsizorder,**peripherorder,**Peripherorder,*fffneworder,*Fffneworder,removedcentral,removedhaplo,**sizeRJ,**historyorder,**Historyorder,totalcount;
 double lik=1,Lik,tremp,tremp1,***data,*mix,*Mix,*mixtot,**mixx,**Mixx,**mixxtot,**muprior,**mean,***tau,**tempmat3,*ancestrallocation,**loc,ww,wwnew,wwtotal=0,*temp_ancestral;
 double *tempvec2,mpriori[2],**psimat;
 double g,***muRJ,****tauRJ;
@@ -10526,10 +10532,14 @@ void bpecfunction(double *modeInitial,char **seqR,double *coordsLocsR,double *co
 	      if(loopno>0)
 		{
 
-		  Try{
-		    hashing(Ldep,NX,NVEC,2,Ldep,DimDim,ModPower,MaxCap,NMAXX);
-		  }
-		  Catch (Temp) ; 
+		  errorflag =  hashing(Ldep,NX,NVEC,2,Ldep,DimDim,ModPower,MaxCap,NMAXX);
+		  
+		  if(errorflag == 1)
+		    {
+		      Rprintf("The MCMC will now exit\n");
+		      R_FlushConsole();
+		      return;
+		    }		    
 		}
 		      
 	      //		      Rprintf("%d ",k);

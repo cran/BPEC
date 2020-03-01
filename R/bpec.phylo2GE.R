@@ -19,11 +19,11 @@
 # KML produced using the Phylo2GE function.
 
 curvy <-
-function(f, startDD, stopDD){  
+function(f, startDD, stopDD){
   radian = 180 / pi
 
   lat1 = startDD[2] / radian
-  lon1 = startDD[1] / radian 
+  lon1 = startDD[1] / radian
   lat2 = stopDD[2] / radian
   lon2 = stopDD[1] / radian
 
@@ -121,11 +121,11 @@ explode <- function (net) {
 
 
 bpec.phylo2GE <-
-function (geo, phy, resol = 0.05, minAlt = 1000, maxAlt = 2.5e+05, 
-    goo = "GoogleEarthTree.kml") 
-{    
+function (geo, phy, resol = 0.05, minAlt = 1000, maxAlt = 2.5e+05,
+    goo = "GoogleEarthTree.kml")
+{
     geo = geo[match(phy$tip.label, geo[, 1]), ]
- 
+
     Ntaxa = length(phy$tip.label)
     Ntot = Ntaxa + phy$Nnode
     geo.childs = data.frame(node = 1:nrow(geo), geo[, 2:3])
@@ -137,7 +137,7 @@ function (geo, phy, resol = 0.05, minAlt = 1000, maxAlt = 2.5e+05,
         }
         else {
             if (sum(desc[1, ] == desc[2, ]) == 0) {
-                anc.geo = c(i, curvy(0.5, desc[1, ], desc[2, 
+                anc.geo = c(i, curvy(0.5, desc[1, ], desc[2,
                   ]))
             }
             else {
@@ -151,7 +151,7 @@ function (geo, phy, resol = 0.05, minAlt = 1000, maxAlt = 2.5e+05,
     edgenum = nrow(phy$edge)
     ages = NULL
     for (i in 1:edgenum) {
-        if (phy$edge[i, 1] == root) 
+        if (phy$edge[i, 1] == root)
             tmp = 0
         else {
             tmp = ages[which(phy$edge[, 2] == phy$edge[i, 1])]
@@ -160,36 +160,36 @@ function (geo, phy, resol = 0.05, minAlt = 1000, maxAlt = 2.5e+05,
     }
     tmp = rbind(c(Ntaxa + 1, 0), cbind(phy$edge[, 2], ages))
     tmp = tmp[order(tmp[, 1]), ]
-    meta = data.frame(node = tmp[, 1], Lon = gtmp[, 1], Lat = gtmp[, 
+    meta = data.frame(node = tmp[, 1], Lon = gtmp[, 1], Lat = gtmp[,
         2], age = tmp[, 2])
     meta$age = 1 - (meta$age/(max(meta$age)))
     meta$age = minAlt + meta$age * maxAlt
-    cat("<?xml version=\"1.0\"?>\n<kml xmlns=\"http://earth.google.com/kml/2.0\">\n<Document>", 
+    cat("<?xml version=\"1.0\"?>\n<kml xmlns=\"http://earth.google.com/kml/2.0\">\n<Document>",
         file = goo, append = FALSE)
-    cat("<description>Produced using bpec and Phylo2GE</description>\n<name>R2G2 - Phylo2GE</name>\n<open>0</open>", 
+    cat("<description>Produced using bpec and Phylo2GE</description>\n<name>R2G2 - Phylo2GE</name>\n<open>0</open>",
         file = goo, append = TRUE)
     for (i in 1:Ntaxa) {
         xyz = as.numeric(meta[i, 2:4])
-        cat("<Placemark>\n<name>", phy$tip.label[i], "</name>\n<LookAt>\n<longitude>", 
-            xyz[1], "</longitude>\n<latitude>", xyz[2], "</latitude>\n<range>", 
+        cat("<Placemark>\n<name>", phy$tip.label[i], "</name>\n<LookAt>\n<longitude>",
+            xyz[1], "</longitude>\n<latitude>", xyz[2], "</latitude>\n<range>",
             xyz[3], "</range>\n</LookAt>", file = goo, append = TRUE)
     cat("<Style>\n<IconStyle>\n<scale>1.2</scale>\n<Icon>\n<href>http://maps.google.com/mapfiles/kml/paddle/red-circle.png</href>\n</Icon>\n</IconStyle>\n</Style>\n
-        <Point>\n<altitudeMode>relativeToGround</altitudeMode>\n<extrude>1</extrude>\n<coordinates>", 
-            paste(xyz, collapse = ",", sep = " "), "</coordinates>\n</Point>\n</Placemark>\n", 
+        <Point>\n<altitudeMode>relativeToGround</altitudeMode>\n<extrude>1</extrude>\n<coordinates>",
+            paste(xyz, collapse = ",", sep = " "), "</coordinates>\n</Point>\n</Placemark>\n",
             file = goo, append = TRUE)
     }
-    cat("<Style id=\"unselectedLine\">\n<LineStyle>\n<color>ff2fffad</color>\n<width>3</width>\n</LineStyle>\n</Style>\n<Style id=\"selectedLine\">\n<LineStyle>\n<color>ff2fffad</color>\n<width>4</width>\n</LineStyle>\n</Style><Folder><name>Edges</name>", 
+    cat("<Style id=\"unselectedLine\">\n<LineStyle>\n<color>ff2fffad</color>\n<width>3</width>\n</LineStyle>\n</Style>\n<Style id=\"selectedLine\">\n<LineStyle>\n<color>ff2fffad</color>\n<width>4</width>\n</LineStyle>\n</Style><Folder><name>Edges</name>",
         file = goo, append = TRUE)
     for (i in 1:nrow(phy$edge)) {
         seg = phy$edge[i, ]
         startDD = meta[seg[1], 2:4]
         stopDD = meta[seg[2], 2:4]
         if (sum(startDD[-3] == stopDD[-3]) == 0) {
-            tmp = t(sapply(seq(0, 1, by = 0.05), curvy, startDD, 
+            tmp = t(sapply(seq(0, 1, by = 0.05), curvy, startDD,
                 stopDD))
         }
         else {
-            tmp = matrix(rep(unlist(startDD[1:2]), each = 3), 
+            tmp = matrix(rep(unlist(startDD[1:2]), each = 3),
                 3, 2)
         }
         pts = cbind(tmp, rep(as.numeric(startDD[3]), nrow(tmp)))
@@ -199,9 +199,9 @@ function (geo, phy, resol = 0.05, minAlt = 1000, maxAlt = 2.5e+05,
         }
         final.coo = meta[seg[2], 2:4]
         final.coo = paste(final.coo, collapse = ",")
-        cat("<Placemark>\n<styleUrl>#unselectedLine</styleUrl>\n<LineString>\n<altitudeMode>relativeToGround</altitudeMode>\n<coordinates>\n", 
-            paste(str, collapse = "\n"), "\n", final.coo, "\n", 
-            "</coordinates>\n</LineString>\n</Placemark>\n", 
+        cat("<Placemark>\n<styleUrl>#unselectedLine</styleUrl>\n<LineString>\n<altitudeMode>relativeToGround</altitudeMode>\n<coordinates>\n",
+            paste(str, collapse = "\n"), "\n", final.coo, "\n",
+            "</coordinates>\n</LineString>\n</Placemark>\n",
             file = goo, append = TRUE)
     }
     cat("</Folder></Document>\n</kml>", file = goo, append = TRUE)
@@ -228,7 +228,7 @@ bpec.geoTree <- function(bpecout, file="GoogleEarthTree.kml") {
                                         # make graph from edgelist
                                         #treeEdgesOut = data.matrix(treeEdges[,1:2])
     treeEdgesOut = data.matrix(bpecout$tree$treeEdges[,1:2])
-    
+
     dimnames(treeEdgesOut) = NULL
     graphEdges = graph.edgelist(treeEdgesOut, directed=TRUE)
                                         # name vertex sequence
@@ -237,34 +237,34 @@ bpec.geoTree <- function(bpecout, file="GoogleEarthTree.kml") {
                                         # remove un-connected vertices
     graphEdgesSub = subgraph.edges(graph=graphEdges, eids=1:length(E(graphEdges)), delete.vertices = TRUE)
                                         #graphEdgesSub
-    
+
                                         # preparation for haplotype-graph plotting
     clustprob[clustprob %in% NaN] = NA
-    
+
                                         # make proportions (rounded integers that sum up to 1000)
                                         #roundint = round(clusterprobs * datsiz[1:count])
     roundInt = 1000 * round(clustprob, 3)
     rowMat = split(roundInt, row(roundInt))
     attributes(rowMat) = NULL
-    
+
                                         # create newick string without lengths
                                         #graphEdges.nwk = network.to.newick(graphEdgesSub)
                                         # or
     graphEdges.nwk = explode(graphEdgesSub)
                                         # string manipulation
     graphEdges.nwk = paste("(",strsplit(graphEdges.nwk,"\\;"),");", sep="")
-    
+
     ## input newick string to create a tree
-    
+
     graphEdgesTree = read.newick(text=graphEdges.nwk)
                                         # remove singletons
     graphEdgesTree = collapse.singles(graphEdgesTree)
-    
+
                                         # add branch length of 1, as R2G2 needs branch lengths
                                         # Note: bpec model does not make inferences about divergence times!
     phy = compute.brlen(graphEdgesTree, 1)
                                         # with the Newick string stored in a file,
-    
+
                                         # load needed package R2G2
                                         #library(R2G2)
                                         # note: the order of lon and lat must be reversed!
@@ -287,12 +287,12 @@ bpec.geoTree <- function(bpecout, file="GoogleEarthTree.kml") {
                             coordsLocsSingle[counter, 2] = coordsLocs[i, 2]
                             coordsLocsSingle[counter, 3] = coordsLocs[i, j]
                             counter = counter+1
-                        }      
+                        }
                 }
         }
-   
+
     geo.0 =  coordsLocsSingle[, c(1:2, dim(coordsLocsSingle)[2])]
-    
+
     colnames(geo.0) = c("lat", "lon", "taxa")
     taxa=data.frame(taxa= as.numeric(graphEdgesTree[["tip.label"]])); taxa
 
@@ -302,7 +302,7 @@ bpec.geoTree <- function(bpecout, file="GoogleEarthTree.kml") {
                                        # converting the tip taxa of the haplotype tree and their corresponding
                                         # geographical coordinates into a KML file to be displayed into Google Earth
                                         #Phylo2GE(geo, phy, 0.05, minAlt = 5000, maxAlt = 100000, goo = "googleearthtree.kml")
-    bpec.phylo2GE(geo, phy, resol=1, goo = file)   
+    bpec.phylo2GE(geo, phy, resol=1, goo = file)
     Output$Geo = geo
     Output$Phy = phy
 
@@ -310,7 +310,7 @@ bpec.geoTree <- function(bpecout, file="GoogleEarthTree.kml") {
     write.csv(geo, file = "geotree.csv")
                                        # set shape of vertex attribute according to haplotypes
                                         # select only sampled haplotypes, the rest should be labeled by haplotype number
-  
+
 
     return(Output)
 }
